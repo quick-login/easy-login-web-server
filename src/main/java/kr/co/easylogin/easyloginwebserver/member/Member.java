@@ -5,15 +5,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import kr.co.easylogin.easyloginwebserver.common.BaseEntity;
+import kr.co.easylogin.easyloginwebserver.member.dto.request.SignupRequest;
 import kr.co.easylogin.easyloginwebserver.member.value.MemberRole;
 import kr.co.easylogin.easyloginwebserver.member.value.MemberStatus;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
 
     @Column(nullable = false, unique = true, length = 50)
@@ -44,4 +43,31 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MemberStatus status;
+
+    // 기본값 세팅
+    protected Member() {
+        this.role = MemberRole.USER;
+        this.remainCount = 100L; // 회원가입시 기본 호출건수 제공
+        this.maxKakaoAppCount = 1L; // 특별상황 아니면 카카오앱 하나만 등록 가능
+        this.cash = 0L;
+        this.status = MemberStatus.ACTIVE;
+    }
+
+    @Builder
+    protected Member(String email, String name, String password, String kakaoId) {
+        this();
+        this.email = email;
+        this.name = name;
+        this.password = password;
+        this.kakaoId = kakaoId;
+    }
+
+    public static Member of(SignupRequest request, String encryptPassword) {
+        return Member.builder()
+                     .email(request.getEmail())
+                     .name(request.getName())
+                     .password(encryptPassword)
+                     .kakaoId(request.getKakaoId())
+                     .build();
+    }
 }
