@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import kr.co.easylogin.easyloginwebserver.common.BaseEntity;
+import kr.co.easylogin.easyloginwebserver.member.value.MemberRole;
 import kr.co.easylogin.easyloginwebserver.member.value.MemberStatus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -24,8 +25,9 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 60)
     private String password;
 
-    @Column(nullable = false, length = 20)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MemberRole role;
 
     @Column(nullable = false)
     private Long remainCount;
