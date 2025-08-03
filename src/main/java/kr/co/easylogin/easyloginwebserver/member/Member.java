@@ -9,10 +9,12 @@ import kr.co.easylogin.easyloginwebserver.member.dto.request.SignupRequest;
 import kr.co.easylogin.easyloginwebserver.member.value.MemberRole;
 import kr.co.easylogin.easyloginwebserver.member.value.MemberStatus;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Slf4j
+@Getter
 public class Member extends BaseEntity {
 
     @Column(nullable = false, unique = true, length = 50)
