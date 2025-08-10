@@ -35,7 +35,7 @@ public class AccessTokenAuthenticationProvider implements AuthenticationProvider
         UserDetails userDetails = userDetailsService.loadUserByUsername(subject);
 
         // 로그아웃 여부 확인
-        validateLogout(token);
+        validateLogout(subject);
 
         return new AccessTokenAuthentication(userDetails, token, userDetails.getAuthorities());
     }
@@ -49,7 +49,7 @@ public class AccessTokenAuthenticationProvider implements AuthenticationProvider
      * Bearer PREFIX 제거하고 토근 가져오기
      */
     private String getTokenWithoutBearer(Authentication authentication) {
-        String tokenWithBearer = (String) authentication.getPrincipal();
+        String tokenWithBearer = (String) authentication.getCredentials();
         return JwtBearerUtils.removePrefix(tokenWithBearer);
     }
 
