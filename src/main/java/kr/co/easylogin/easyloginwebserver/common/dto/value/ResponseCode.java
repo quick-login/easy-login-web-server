@@ -16,6 +16,7 @@ public enum ResponseCode {
     PASSWORD_CHECK_ERROR(HttpStatus.BAD_REQUEST, "U1001", "비밀번호와 비밀번호 확인값이 일치하지 않습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U1002", "회원을 찾을 수 없습니다."),
     LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, "U1003", "로그인이 필요합니다."),
+    LOGIN_FAILED(HttpStatus.BAD_REQUEST, "U1004", "로그인 과정에서 오류 발생"),
 
     // 사용자 입력 에러
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "E4000", "유효하지 않은 입력값입니다."),
