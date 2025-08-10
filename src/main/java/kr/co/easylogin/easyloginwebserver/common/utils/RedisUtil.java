@@ -2,14 +2,15 @@ package kr.co.easylogin.easyloginwebserver.common.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.Duration;
-import java.util.Optional;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+
+import java.time.Duration;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -21,7 +22,7 @@ public class RedisUtil {
 
     public <T> Optional<T> get(String key, Class<T> clazz) {
         return Optional.ofNullable(redisTemplate.opsForValue().get(key))
-                       .map(json -> praseJson(json, clazz));
+                .map(json -> praseJson(json, clazz));
     }
 
     public <T> void set(String key, T value) {
@@ -35,6 +36,10 @@ public class RedisUtil {
         } else {
             redisTemplate.opsForValue().set(key, json);
         }
+    }
+
+    public void delete(String key) {
+        redisTemplate.delete(key);
     }
 
     private <T> String toJson(T value) {
