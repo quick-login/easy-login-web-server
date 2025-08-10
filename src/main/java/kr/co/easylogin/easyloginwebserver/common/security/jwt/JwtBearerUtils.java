@@ -21,7 +21,7 @@ public class JwtBearerUtils {
      * PREFIX 추가
      */
     public static String addPrefix(String token) {
-        return hasBearerPrefix(token) ? token + BEARER_PREFIX : token;
+        return hasBearerPrefix(token) ? token : BEARER_PREFIX + token;
     }
 
 }
