@@ -160,7 +160,7 @@ public class SecurityConfiguration {
                     // 정적 파일
                     .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                     // 인증
-                    .requestMatchers(HttpMethod.POST, SIGNUP_URL, REFRESH_URL).permitAll()
+                    .requestMatchers(SIGNUP_URL, REFRESH_URL, "/api/v1/member/duplicate").permitAll()
                     // 그 외
                     .anyRequest().authenticated()
                                   );

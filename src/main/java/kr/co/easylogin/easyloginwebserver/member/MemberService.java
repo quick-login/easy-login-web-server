@@ -3,6 +3,8 @@ package kr.co.easylogin.easyloginwebserver.member;
 import kr.co.easylogin.easyloginwebserver.common.dto.ResponseDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
+import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailDuplicateRequest;
+import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailVerificationRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.SignupRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,5 +45,15 @@ public class MemberService {
             throw new BusinessException(ResponseCode.PASSWORD_CHECK_ERROR);
         }
         return passwordEncoder.encode(signupRequest.getPassword());
+    }
+
+    /**
+     * 이메일 중복 회원 검증
+     */
+    public boolean emailDuplicate(EmailDuplicateRequest request) {
+        if (memberRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new BusinessException(ResponseCode.DUPLICATE_EMAIL);
+        }
+        return true;
     }
 }
