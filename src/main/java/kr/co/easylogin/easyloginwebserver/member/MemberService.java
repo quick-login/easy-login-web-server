@@ -1,8 +1,14 @@
 package kr.co.easylogin.easyloginwebserver.member;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.Duration;
+import java.util.Random;
 import kr.co.easylogin.easyloginwebserver.common.dto.ResponseDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
+import kr.co.easylogin.easyloginwebserver.common.utils.RedisUtil;
+import kr.co.easylogin.easyloginwebserver.mail.MailSenderService;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailDuplicateRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailVerificationRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.SignupRequest;
@@ -20,6 +26,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RedisUtil redisUtil;
+    private final MailSenderService mailSenderService;
 
     /**
      * 회원가입
@@ -55,5 +63,36 @@ public class MemberService {
             throw new BusinessException(ResponseCode.DUPLICATE_EMAIL);
         }
         return true;
+    }
+
+    /**
+     * 메일 인증번호 생성 및 전송
+     */
+    public void sendEmailVerification(EmailVerificationRequest request) {
+        String code = createCode();
+        redisUtil.set("veri:" + request.getEmail(), code, Duration.ofMinutes(3));
+
+        try {
+            mailSenderService.sendMailVerificationCode(request, code);
+        } catch (Exception e) {
+        }
+    }
+
+    /**
+     * 메일인증 랜덤번호 생성 후 메일전송
+     */
+    private String createCode() {
+        int length = 6;
+        try {
+            Random random = SecureRandom.getInstanceStrong();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < length; i++) {
+                sb.append(random.nextInt(10));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            log.error("메일인증 랜덤번호 생성 중 오류발생");
+            throw new BusinessException(ResponseCode.MAIL_CODE_CREATE_ERROR);
+        }
     }
 }

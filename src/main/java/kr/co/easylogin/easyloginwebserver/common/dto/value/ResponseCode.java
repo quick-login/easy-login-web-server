@@ -23,11 +23,12 @@ public enum ResponseCode {
 
     // 서버 에러
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E5000", "정의되지않은 서버 에러"),
+    MAIL_CODE_CREATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E5001", "메일 인증코드 생성중 오류가 발생했습니다."),
 
     // JWT 관련 에러
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "T6000", "유효하지 않은 토큰입니다."),
     EXPIRED_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "T6001", "만료된 Access Token 입니다."),
-    EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "2006", "만료된 Refresh Token 입니다.");
+    EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "T6002", "만료된 Refresh Token 입니다.");
 
     private final HttpStatus status;
     private final String code;
