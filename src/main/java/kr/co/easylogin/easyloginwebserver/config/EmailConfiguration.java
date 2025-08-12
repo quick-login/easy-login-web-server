@@ -24,9 +24,9 @@ public class EmailConfiguration {
 
     @Value("${spring.mail.properties.mail.smtp.auth}")
     private String auth;
-
-    @Value("${spring.mail.properties.mail.smtp.ssl.enable}")
-    private String sslEnable;
+    
+    @Value("${spring.mail.properties.mail.smtp.starttls.enable}")
+    private String startTls;
 
     @Bean
     public JavaMailSender javaMailSender() {
@@ -44,7 +44,7 @@ public class EmailConfiguration {
     private Properties getMailProperties() {
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", auth);
-        properties.put("mail.smtp.ssl.enable", sslEnable);
+        properties.put("mail.smtp.starttls.enable", startTls);
 
         return properties;
     }
