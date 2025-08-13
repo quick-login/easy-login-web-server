@@ -10,6 +10,7 @@ import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.common.utils.RedisUtil;
 import kr.co.easylogin.easyloginwebserver.mail.MailSenderService;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailDuplicateRequest;
+import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailValidationRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailVerificationRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.SignupRequest;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MemberService {
 
+    private static final String EMAIL_VERIFICATION_PREFIX = "veri:";
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisUtil redisUtil;
@@ -70,7 +72,7 @@ public class MemberService {
      */
     public void sendEmailVerification(EmailVerificationRequest request) {
         String code = createCode();
-        redisUtil.set("veri:" + request.getEmail(), code, Duration.ofMinutes(3));
+        redisUtil.set(EMAIL_VERIFICATION_PREFIX + request.getEmail(), code, Duration.ofMinutes(3));
 
         try {
             mailSenderService.sendMailVerificationCode(request, code);
@@ -93,6 +95,22 @@ public class MemberService {
         } catch (NoSuchAlgorithmException e) {
             log.error("메일인증 랜덤번호 생성 중 오류발생");
             throw new BusinessException(ResponseCode.MAIL_CODE_CREATE_ERROR);
+        }
+    }
+
+    /**
+     * 이메일 인증번호 검증
+     */
+    public void emailValidation(EmailValidationRequest request) {
+        String code = redisUtil.get(EMAIL_VERIFICATION_PREFIX + request.getEmail(), String.class)
+            .orElseThrow(() -> new BusinessException(ResponseCode.MAIL_EXPIRED_3_MIN));
+
+        if (request.getCode().equals(code)) {
+            log.info("이메일 인증 성공 : {}", request.getEmail());
+            redisUtil.set(EMAIL_VERIFICATION_PREFIX + request.getEmail(), true, Duration.ofMinutes(60));
+        } else {
+            log.error("이메일 인증 실패 : {}", request.getEmail());
+            throw new BusinessException(ResponseCode.EMAIL_CODE_INVALID);
         }
     }
 }

@@ -45,7 +45,7 @@ public class SecurityConfiguration {
 
     private static final List<String> ALLOWED_ORIGINS = List.of(
         "http://localhost:3000"
-                                                               );
+    );
 
     private static final List<String> ALLOWED_METHODS = List.of(
         HttpMethod.GET.name(),
@@ -53,7 +53,7 @@ public class SecurityConfiguration {
         HttpMethod.PUT.name(),
         HttpMethod.PATCH.name(),
         HttpMethod.DELETE.name()
-                                                               );
+    );
 
     private final AccessTokenAuthenticationProvider accessTokenAuthProvider;
     private final RefreshTokenAuthenticationProvider refreshTokenAuthProvider;
@@ -112,7 +112,7 @@ public class SecurityConfiguration {
         AuthFilter authFilter,
         RefreshFilter refreshFilter,
         ExceptionFilter exceptionFilter
-                                          ) throws Exception {
+    ) throws Exception {
 
         // CSRF 비활성화
         http.csrf(AbstractHttpConfigurer::disable);
@@ -160,9 +160,10 @@ public class SecurityConfiguration {
                     // 정적 파일
                     .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                     // 인증
-                    .requestMatchers(SIGNUP_URL, REFRESH_URL, "/api/v1/member/duplicate", "api/v1/member/email-verification").permitAll()
+                    .requestMatchers(SIGNUP_URL, REFRESH_URL, "/api/v1/member/duplicate", "/api/v1/member/email-verification",
+                        "/api/v1/member/email-validation").permitAll()
                     // 그 외
                     .anyRequest().authenticated()
-                                  );
+        );
     }
 }

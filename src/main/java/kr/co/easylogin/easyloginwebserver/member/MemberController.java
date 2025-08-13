@@ -2,6 +2,7 @@ package kr.co.easylogin.easyloginwebserver.member;
 
 import jakarta.validation.Valid;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailDuplicateRequest;
+import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailValidationRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailVerificationRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.SignupRequest;
 import lombok.RequiredArgsConstructor;
@@ -32,5 +33,10 @@ public class MemberController {
     @PostMapping("/email-verification")
     public void sendEmailVerification(@Valid @RequestBody EmailVerificationRequest request) {
         memberService.sendEmailVerification(request);
+    }
+
+    @PostMapping("/email-validation")
+    public void EmailValidation(@Valid @RequestBody EmailValidationRequest request) {
+        memberService.emailValidation(request);
     }
 }
