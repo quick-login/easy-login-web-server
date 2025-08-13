@@ -4,7 +4,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.Random;
-import kr.co.easylogin.easyloginwebserver.common.dto.ResponseDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.common.utils.RedisUtil;
@@ -35,16 +34,28 @@ public class MemberService {
      * 회원가입
      */
     @Transactional
-    public ResponseDto<Object> signup(SignupRequest signupRequest) {
+    public void signup(SignupRequest signupRequest) {
         if (memberRepository.findByEmail(signupRequest.getEmail()).isPresent()) {
             throw new BusinessException(ResponseCode.DUPLICATE_EMAIL);
         }
 
-        String encryptPassword = passwordSameCheck(signupRequest);
-        Member member = Member.of(signupRequest, encryptPassword);
+        String encryptPassword = passwordSameCheck(signupRequest); // 비밀번호 입력 검증
+        emailVerifiedCheck(signupRequest); // 이메일 인증 검사
+        Member member = Member.of(signupRequest, encryptPassword); // 멤버 객체 생성
 
         memberRepository.save(member);
-        return ResponseDto.of(ResponseCode.SUCCESS);
+    }
+
+    /**
+     * 이메일 인증 검사 - 이메일 인증 후 60분 유효
+     */
+    private void emailVerifiedCheck(SignupRequest signupRequest) {
+        String emailVerified = redisUtil.get(EMAIL_VERIFICATION_PREFIX + signupRequest.getEmail(), String.class)
+                                        .orElseThrow(() -> new BusinessException(ResponseCode.EMAIL_VERIFIED_EXPIRED));
+
+        if (!emailVerified.equals("true")) {
+            throw new BusinessException(ResponseCode.EMAIL_UNVERIFIED_ERROR);
+        }
     }
 
     /**
@@ -77,6 +88,7 @@ public class MemberService {
         try {
             mailSenderService.sendMailVerificationCode(request, code);
         } catch (Exception e) {
+            log.error("sendEmailVerification Exception : {}", e.getMessage());
         }
     }
 
@@ -103,7 +115,7 @@ public class MemberService {
      */
     public void emailValidation(EmailValidationRequest request) {
         String code = redisUtil.get(EMAIL_VERIFICATION_PREFIX + request.getEmail(), String.class)
-            .orElseThrow(() -> new BusinessException(ResponseCode.MAIL_EXPIRED_3_MIN));
+                               .orElseThrow(() -> new BusinessException(ResponseCode.MAIL_EXPIRED_3_MIN));
 
         if (request.getCode().equals(code)) {
             log.info("이메일 인증 성공 : {}", request.getEmail());
