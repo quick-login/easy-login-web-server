@@ -12,8 +12,11 @@ import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailDuplicateReque
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailValidationRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailVerificationRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.SignupRequest;
+import kr.co.easylogin.easyloginwebserver.member.dto.response.MemberInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -124,5 +127,18 @@ public class MemberService {
             log.error("이메일 인증 실패 : {}", request.getEmail());
             throw new BusinessException(ResponseCode.EMAIL_CODE_INVALID);
         }
+    }
+
+    /**
+     * 회원 정보 조회 - 메인 페이지, 마이페이지 등 회원 데이터 필요한곳에서 조회
+     */
+    public MemberInfoResponse getMemberInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        Member member = memberRepository.findByEmail(email)
+                                        .orElseThrow(() -> new BusinessException(ResponseCode.USER_NOT_FOUND));
+
+        return MemberInfoResponse.of(member);
     }
 }
