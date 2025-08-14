@@ -54,7 +54,7 @@ public class MemberService {
      */
     private void emailVerifiedCheck(SignupRequest signupRequest) {
         String emailVerified = redisUtil.get(EMAIL_VERIFICATION_PREFIX + signupRequest.getEmail(), String.class)
-                                        .orElseThrow(() -> new BusinessException(ResponseCode.EMAIL_VERIFIED_EXPIRED));
+            .orElseThrow(() -> new BusinessException(ResponseCode.EMAIL_VERIFIED_EXPIRED));
 
         if (!emailVerified.equals("true")) {
             throw new BusinessException(ResponseCode.EMAIL_UNVERIFIED_ERROR);
@@ -118,7 +118,7 @@ public class MemberService {
      */
     public void emailValidation(EmailValidationRequest request) {
         String code = redisUtil.get(EMAIL_VERIFICATION_PREFIX + request.getEmail(), String.class)
-                               .orElseThrow(() -> new BusinessException(ResponseCode.MAIL_EXPIRED_3_MIN));
+            .orElseThrow(() -> new BusinessException(ResponseCode.MAIL_EXPIRED_3_MIN));
 
         if (request.getCode().equals(code)) {
             log.info("이메일 인증 성공 : {}", request.getEmail());
@@ -130,14 +130,21 @@ public class MemberService {
     }
 
     /**
-     * 회원 정보 조회 - 메인 페이지, 마이페이지 등 회원 데이터 필요한곳에서 조회
+     * SecurityContext 에서 email 꺼내서 멤버객체 조회
      */
-    public MemberInfoResponse getMemberInfo() {
+    private Member getRequestMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
-        Member member = memberRepository.findByEmail(email)
-                                        .orElseThrow(() -> new BusinessException(ResponseCode.USER_NOT_FOUND));
+        return memberRepository.findByEmail(email)
+            .orElseThrow(() -> new BusinessException(ResponseCode.USER_NOT_FOUND));
+    }
+
+    /**
+     * 회원 정보 조회 - 메인 페이지, 마이페이지 등 회원 데이터 필요한곳에서 조회
+     */
+    public MemberInfoResponse getMemberInfo() {
+        Member member = getRequestMember();
 
         return MemberInfoResponse.of(member);
     }
