@@ -11,6 +11,7 @@ import kr.co.easylogin.easyloginwebserver.mail.MailSenderService;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailDuplicateRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailValidationRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailVerificationRequest;
+import kr.co.easylogin.easyloginwebserver.member.dto.request.ModifyRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.SignupRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.response.MemberInfoResponse;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class MemberService {
             throw new BusinessException(ResponseCode.DUPLICATE_EMAIL);
         }
 
-        String encryptPassword = passwordSameCheck(signupRequest); // 비밀번호 입력 검증
+        String encryptPassword = passwordSameCheck(signupRequest.getPassword(), signupRequest.getPasswordCheck()); // 비밀번호 입력 검증
         emailVerifiedCheck(signupRequest); // 이메일 인증 검사
         Member member = Member.of(signupRequest, encryptPassword); // 멤버 객체 생성
 
@@ -64,11 +65,11 @@ public class MemberService {
     /**
      * 비밀번호 동일하게 입력했는지 체크
      */
-    private String passwordSameCheck(SignupRequest signupRequest) {
-        if (!signupRequest.getPassword().equals(signupRequest.getPasswordCheck())) {
+    private String passwordSameCheck(String password, String passwordCheck) {
+        if (!password.equals(passwordCheck)) {
             throw new BusinessException(ResponseCode.PASSWORD_CHECK_ERROR);
         }
-        return passwordEncoder.encode(signupRequest.getPassword());
+        return passwordEncoder.encode(password);
     }
 
     /**
@@ -147,5 +148,17 @@ public class MemberService {
         Member member = getRequestMember();
 
         return MemberInfoResponse.of(member);
+    }
+
+    /**
+     * 회원 정보 수정
+     */
+    @Transactional
+    public Member modifyMemberInfo(ModifyRequest request) {
+        Member member = getRequestMember();
+        String encPassword = passwordSameCheck(request.getPassword(), request.getPasswordCheck());
+
+        member.modify(request, encPassword);
+        return member;
     }
 }
