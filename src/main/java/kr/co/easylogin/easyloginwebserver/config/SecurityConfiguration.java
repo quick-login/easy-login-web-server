@@ -92,10 +92,10 @@ public class SecurityConfiguration {
         return new ExceptionFilter(objectMapper);
     }
 
-    @Bean
-    public AuthFilter jwtAuthFilter() {
-        return new AuthFilter(authenticationManager());
-    }
+//    @Bean
+//    public AuthFilter jwtAuthFilter() {
+//        return new AuthFilter(authenticationManager());
+//    }
 
     @Bean
     public SecurityFilterChain filterChain(
