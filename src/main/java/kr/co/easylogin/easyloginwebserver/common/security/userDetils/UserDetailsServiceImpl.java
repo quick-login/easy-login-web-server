@@ -21,7 +21,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) {
 
         Member member = memberRepository.findByEmail(username)
-                                        .orElseThrow(() -> new BusinessException(ResponseCode.USER_NOT_FOUND));
+                                        .orElseThrow(() -> new BusinessException(ResponseCode.INVALID_LOGIN_INFO));
 
         return new UserDetailsImpl(member);
     }
