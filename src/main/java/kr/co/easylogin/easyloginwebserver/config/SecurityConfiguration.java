@@ -2,6 +2,7 @@ package kr.co.easylogin.easyloginwebserver.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import kr.co.easylogin.easyloginwebserver.auth.LoginHistoryRepository;
 import kr.co.easylogin.easyloginwebserver.common.security.filter.AuthFilter;
 import kr.co.easylogin.easyloginwebserver.common.security.filter.ExceptionFilter;
 import kr.co.easylogin.easyloginwebserver.common.security.filter.LoginFilter;
@@ -13,6 +14,7 @@ import kr.co.easylogin.easyloginwebserver.common.security.provider.AccessTokenAu
 import kr.co.easylogin.easyloginwebserver.common.security.provider.RefreshTokenAuthenticationProvider;
 import kr.co.easylogin.easyloginwebserver.common.security.provider.UsernamePasswordAuthenticationProvider;
 import kr.co.easylogin.easyloginwebserver.common.utils.RedisUtil;
+import kr.co.easylogin.easyloginwebserver.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -43,7 +45,7 @@ public class SecurityConfiguration {
 
     private static final List<String> ALLOWED_ORIGINS = List.of(
         "http://localhost:3000"
-    );
+                                                               );
 
     private static final List<String> ALLOWED_METHODS = List.of(
         HttpMethod.GET.name(),
@@ -51,7 +53,7 @@ public class SecurityConfiguration {
         HttpMethod.PUT.name(),
         HttpMethod.PATCH.name(),
         HttpMethod.DELETE.name()
-    );
+                                                               );
 
     private final AccessTokenAuthenticationProvider accessTokenAuthProvider;
     private final RefreshTokenAuthenticationProvider refreshTokenAuthProvider;
@@ -73,8 +75,9 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public LoginFilter loginFilter(ObjectMapper objectMapper, AuthenticationSuccessHandler loginSuccessHandler) {
-        LoginFilter filter = new LoginFilter(objectMapper, loginSuccessHandler);
+    public LoginFilter loginFilter(ObjectMapper objectMapper, AuthenticationSuccessHandler loginSuccessHandler,
+                                   MemberRepository memberRepository, LoginHistoryRepository loginHistoryRepository) {
+        LoginFilter filter = new LoginFilter(objectMapper, loginSuccessHandler, memberRepository, loginHistoryRepository);
         filter.setAuthenticationManager(authenticationManager());
         return filter;
     }
@@ -102,7 +105,7 @@ public class SecurityConfiguration {
         AuthFilter authFilter,
         RefreshFilter refreshFilter,
         ExceptionFilter exceptionFilter
-    ) throws Exception {
+                                          ) throws Exception {
 
         // CSRF 비활성화
         http.csrf(AbstractHttpConfigurer::disable);
@@ -151,9 +154,9 @@ public class SecurityConfiguration {
                     .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                     // 인증
                     .requestMatchers(SIGNUP_URL, REFRESH_URL, "/api/v1/member/duplicate", "/api/v1/member/email-verification",
-                        "/api/v1/member/email-validation").permitAll()
+                                     "/api/v1/member/email-validation").permitAll()
                     // 그 외
                     .anyRequest().authenticated()
-        );
+                                  );
     }
 }

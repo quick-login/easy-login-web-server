@@ -5,19 +5,24 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import kr.co.easylogin.easyloginwebserver.auth.LoginHistory;
+import kr.co.easylogin.easyloginwebserver.auth.LoginHistoryRepository;
+import kr.co.easylogin.easyloginwebserver.auth.value.LoginStatus;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.config.SecurityConfiguration;
+import kr.co.easylogin.easyloginwebserver.member.Member;
+import kr.co.easylogin.easyloginwebserver.member.MemberRepository;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.LoginRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import java.io.IOException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,6 +30,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final ObjectMapper objectMapper;
     private final AuthenticationSuccessHandler loginSuccessHandler;
+    private final MemberRepository memberRepository;
+    private final LoginHistoryRepository loginHistoryRepository;
 
     @PostConstruct
     public void init() {
@@ -40,17 +47,62 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
             // 인증 처리 로직
             Authentication preAuthentication = new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword(), null);
-            return getAuthenticationManager().authenticate(preAuthentication);
+            Authentication authentication = getAuthenticationManager().authenticate(preAuthentication);
+
+            if (authentication.isAuthenticated()) {
+                UserDetails principal = (UserDetails) authentication.getPrincipal();
+                String username = principal.getUsername();
+                Member member = memberRepository.findByEmail(username)
+                                                .orElseThrow(() -> new BusinessException(ResponseCode.USER_NOT_FOUND));
+
+                LoginHistory loginHistory = new LoginHistory(member, getClientIP(request), LoginStatus.SUCCESS);
+                loginHistoryRepository.save(loginHistory);
+            } else {
+                UserDetails principal = (UserDetails) authentication.getPrincipal();
+                String username = principal.getUsername();
+                Member member = memberRepository.findByEmail(username)
+                                                .orElseThrow(() -> new BusinessException(ResponseCode.USER_NOT_FOUND));
+
+                LoginHistory loginHistory = new LoginHistory(member, getClientIP(request), LoginStatus.FAIL);
+                loginHistoryRepository.save(loginHistory);
+                throw new BusinessException(ResponseCode.INVALID_LOGIN_INFO);
+            }
+
+            return authentication;
         } catch (IOException e) {
             throw new BusinessException(ResponseCode.SERVER_ERROR);
         }
+    }
+
+    private String getClientIP(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+
+        if (ip == null) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null) {
+            ip = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null) {
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null) {
+            // -Djava.net.preferIPv4Stack=true VM 옵션에 추가해야 IPv4 형태로 뽑아옴
+            ip = request.getRemoteAddr();
+        }
+
+        return ip;
     }
 
     /**
      * 로그인 실패시 처리 로직
      */
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
+        throws IOException, ServletException {
         log.info("login failed message : {}", failed.getMessage());
         throw new BusinessException(ResponseCode.LOGIN_FAILED);
     }
