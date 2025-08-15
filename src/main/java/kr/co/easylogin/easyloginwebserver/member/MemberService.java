@@ -7,6 +7,7 @@ import java.util.Random;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.common.utils.RedisUtil;
+import kr.co.easylogin.easyloginwebserver.common.utils.SecurityUtil;
 import kr.co.easylogin.easyloginwebserver.mail.MailSenderService;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailDuplicateRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailValidationRequest;
@@ -16,8 +17,6 @@ import kr.co.easylogin.easyloginwebserver.member.dto.request.SignupRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.response.MemberInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +32,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final RedisUtil redisUtil;
     private final MailSenderService mailSenderService;
+    private final SecurityUtil securityUtil;
 
     /**
      * 회원가입
@@ -55,7 +55,7 @@ public class MemberService {
      */
     private void emailVerifiedCheck(SignupRequest signupRequest) {
         String emailVerified = redisUtil.get(EMAIL_VERIFICATION_PREFIX + signupRequest.getEmail(), String.class)
-            .orElseThrow(() -> new BusinessException(ResponseCode.EMAIL_VERIFIED_EXPIRED));
+                                        .orElseThrow(() -> new BusinessException(ResponseCode.EMAIL_VERIFIED_EXPIRED));
 
         if (!emailVerified.equals("true")) {
             throw new BusinessException(ResponseCode.EMAIL_UNVERIFIED_ERROR);
@@ -119,7 +119,7 @@ public class MemberService {
      */
     public void emailValidation(EmailValidationRequest request) {
         String code = redisUtil.get(EMAIL_VERIFICATION_PREFIX + request.getEmail(), String.class)
-            .orElseThrow(() -> new BusinessException(ResponseCode.MAIL_EXPIRED_3_MIN));
+                               .orElseThrow(() -> new BusinessException(ResponseCode.MAIL_EXPIRED_3_MIN));
 
         if (request.getCode().equals(code)) {
             log.info("이메일 인증 성공 : {}", request.getEmail());
@@ -131,21 +131,10 @@ public class MemberService {
     }
 
     /**
-     * SecurityContext 에서 email 꺼내서 멤버객체 조회
-     */
-    private Member getRequestMember() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-
-        return memberRepository.findByEmail(email)
-            .orElseThrow(() -> new BusinessException(ResponseCode.USER_NOT_FOUND));
-    }
-
-    /**
      * 회원 정보 조회 - 메인 페이지, 마이페이지 등 회원 데이터 필요한곳에서 조회
      */
     public MemberInfoResponse getMemberInfo() {
-        Member member = getRequestMember();
+        Member member = securityUtil.getRequestMember();
 
         return MemberInfoResponse.of(member);
     }
@@ -155,7 +144,7 @@ public class MemberService {
      */
     @Transactional
     public Member modifyMemberInfo(ModifyRequest request) {
-        Member member = getRequestMember();
+        Member member = securityUtil.getRequestMember();
         String encPassword = passwordSameCheck(request.getPassword(), request.getPasswordCheck());
 
         member.modify(request, encPassword);
