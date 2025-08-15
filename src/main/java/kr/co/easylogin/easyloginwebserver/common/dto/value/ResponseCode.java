@@ -22,6 +22,9 @@ public enum ResponseCode {
     EMAIL_UNVERIFIED_ERROR(HttpStatus.BAD_REQUEST, "U1007", "인증되지 않은 이메일입니다."),
     INVALID_LOGIN_INFO(HttpStatus.UNAUTHORIZED, "U1008", "로그인 인증정보가 일치하지 않습니다."),
 
+    // 카카오 앱 에러
+    APP_REGISTRATION_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "K2000", "등록 가능한 앱 가능 수를 초과하였습니다."),
+
     // 사용자 입력 에러
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "E4000", "유효하지 않은 입력값입니다."),
 
