@@ -26,8 +26,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -58,14 +56,6 @@ public class SecurityConfiguration {
     private final AccessTokenAuthenticationProvider accessTokenAuthProvider;
     private final RefreshTokenAuthenticationProvider refreshTokenAuthProvider;
     private final UsernamePasswordAuthenticationProvider usernamePasswordAuthProvider;
-
-    /**
-     * 비밀번호 암호화 설정
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Bean
     public AuthenticationManager authenticationManager() {

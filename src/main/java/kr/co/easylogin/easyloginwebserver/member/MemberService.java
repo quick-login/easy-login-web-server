@@ -11,9 +11,13 @@ import kr.co.easylogin.easyloginwebserver.mail.MailSenderService;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailDuplicateRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailValidationRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailVerificationRequest;
+import kr.co.easylogin.easyloginwebserver.member.dto.request.ModifyRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.SignupRequest;
+import kr.co.easylogin.easyloginwebserver.member.dto.response.MemberInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +43,7 @@ public class MemberService {
             throw new BusinessException(ResponseCode.DUPLICATE_EMAIL);
         }
 
-        String encryptPassword = passwordSameCheck(signupRequest); // 비밀번호 입력 검증
+        String encryptPassword = passwordSameCheck(signupRequest.getPassword(), signupRequest.getPasswordCheck()); // 비밀번호 입력 검증
         emailVerifiedCheck(signupRequest); // 이메일 인증 검사
         Member member = Member.of(signupRequest, encryptPassword); // 멤버 객체 생성
 
@@ -51,7 +55,7 @@ public class MemberService {
      */
     private void emailVerifiedCheck(SignupRequest signupRequest) {
         String emailVerified = redisUtil.get(EMAIL_VERIFICATION_PREFIX + signupRequest.getEmail(), String.class)
-                                        .orElseThrow(() -> new BusinessException(ResponseCode.EMAIL_VERIFIED_EXPIRED));
+            .orElseThrow(() -> new BusinessException(ResponseCode.EMAIL_VERIFIED_EXPIRED));
 
         if (!emailVerified.equals("true")) {
             throw new BusinessException(ResponseCode.EMAIL_UNVERIFIED_ERROR);
@@ -61,11 +65,11 @@ public class MemberService {
     /**
      * 비밀번호 동일하게 입력했는지 체크
      */
-    private String passwordSameCheck(SignupRequest signupRequest) {
-        if (!signupRequest.getPassword().equals(signupRequest.getPasswordCheck())) {
+    private String passwordSameCheck(String password, String passwordCheck) {
+        if (!password.equals(passwordCheck)) {
             throw new BusinessException(ResponseCode.PASSWORD_CHECK_ERROR);
         }
-        return passwordEncoder.encode(signupRequest.getPassword());
+        return passwordEncoder.encode(password);
     }
 
     /**
@@ -115,7 +119,7 @@ public class MemberService {
      */
     public void emailValidation(EmailValidationRequest request) {
         String code = redisUtil.get(EMAIL_VERIFICATION_PREFIX + request.getEmail(), String.class)
-                               .orElseThrow(() -> new BusinessException(ResponseCode.MAIL_EXPIRED_3_MIN));
+            .orElseThrow(() -> new BusinessException(ResponseCode.MAIL_EXPIRED_3_MIN));
 
         if (request.getCode().equals(code)) {
             log.info("이메일 인증 성공 : {}", request.getEmail());
@@ -124,5 +128,37 @@ public class MemberService {
             log.error("이메일 인증 실패 : {}", request.getEmail());
             throw new BusinessException(ResponseCode.EMAIL_CODE_INVALID);
         }
+    }
+
+    /**
+     * SecurityContext 에서 email 꺼내서 멤버객체 조회
+     */
+    private Member getRequestMember() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        return memberRepository.findByEmail(email)
+            .orElseThrow(() -> new BusinessException(ResponseCode.USER_NOT_FOUND));
+    }
+
+    /**
+     * 회원 정보 조회 - 메인 페이지, 마이페이지 등 회원 데이터 필요한곳에서 조회
+     */
+    public MemberInfoResponse getMemberInfo() {
+        Member member = getRequestMember();
+
+        return MemberInfoResponse.of(member);
+    }
+
+    /**
+     * 회원 정보 수정
+     */
+    @Transactional
+    public Member modifyMemberInfo(ModifyRequest request) {
+        Member member = getRequestMember();
+        String encPassword = passwordSameCheck(request.getPassword(), request.getPasswordCheck());
+
+        member.modify(request, encPassword);
+        return member;
     }
 }

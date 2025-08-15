@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import kr.co.easylogin.easyloginwebserver.common.BaseEntity;
+import kr.co.easylogin.easyloginwebserver.member.dto.request.ModifyRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.SignupRequest;
 import kr.co.easylogin.easyloginwebserver.member.value.MemberRole;
 import kr.co.easylogin.easyloginwebserver.member.value.MemberStatus;
@@ -66,10 +67,15 @@ public class Member extends BaseEntity {
 
     public static Member of(SignupRequest request, String encryptPassword) {
         return Member.builder()
-                     .email(request.getEmail())
-                     .name(request.getName())
-                     .password(encryptPassword)
-                     .kakaoId(request.getKakaoId())
-                     .build();
+            .email(request.getEmail())
+            .name(request.getName())
+            .password(encryptPassword)
+            .kakaoId(request.getKakaoId())
+            .build();
+    }
+
+    public void modify(ModifyRequest request, String encPassword) {
+        this.name = request.getName();
+        this.password = encPassword;
     }
 }
