@@ -1,7 +1,5 @@
 package kr.co.easylogin.easyloginwebserver.common.security.provider;
 
-import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
-import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,7 +24,7 @@ public class UsernamePasswordAuthenticationProvider implements AuthenticationPro
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         if (!passwordEncoder.matches(password, userDetails.getPassword())) {
-            throw new BusinessException(ResponseCode.INVALID_LOGIN_INFO);
+            return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword());
         }
 
         return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
