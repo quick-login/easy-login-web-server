@@ -6,7 +6,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import kr.co.easylogin.easyloginwebserver.common.BaseEntity;
-import kr.co.easylogin.easyloginwebserver.kakao.request.RegisterKakaoBizAppRequest;
+import kr.co.easylogin.easyloginwebserver.kakao.request.RegisterKakaoAppRequest;
 import kr.co.easylogin.easyloginwebserver.member.Member;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -46,7 +46,7 @@ public class KakaoApp extends BaseEntity {
         this.redirectUrl = redirectUrl;
     }
 
-    public static KakaoApp of(Member member, RegisterKakaoBizAppRequest request, String redirectUrl) {
+    public static KakaoApp of(Member member, RegisterKakaoAppRequest request, String redirectUrl) {
         return KakaoApp.builder()
                        .member(member)
                        .appId(request.getAppId())
@@ -56,7 +56,7 @@ public class KakaoApp extends BaseEntity {
                        .build();
     }
 
-    public static KakaoApp of(Member member, RegisterKakaoBizAppRequest request) {
+    public static KakaoApp of(Member member, RegisterKakaoAppRequest request) {
         return KakaoApp.builder()
                        .member(member)
                        .appId(request.getAppId())

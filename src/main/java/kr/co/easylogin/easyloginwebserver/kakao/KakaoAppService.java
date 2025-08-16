@@ -1,9 +1,11 @@
 package kr.co.easylogin.easyloginwebserver.kakao;
 
+import java.util.List;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.common.utils.SecurityUtil;
-import kr.co.easylogin.easyloginwebserver.kakao.request.RegisterKakaoBizAppRequest;
+import kr.co.easylogin.easyloginwebserver.kakao.request.RegisterKakaoAppRequest;
+import kr.co.easylogin.easyloginwebserver.kakao.response.KakaoAppInfoResponse;
 import kr.co.easylogin.easyloginwebserver.member.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +27,7 @@ public class KakaoAppService {
     private String baseRedirectUrl;
 
     @Transactional
-    public void registerApp(RegisterKakaoBizAppRequest request) {
+    public void registerApp(RegisterKakaoAppRequest request) {
         Member member = securityUtil.getRequestMember();
         KakaoApp kakaoApp;
 
@@ -49,4 +51,12 @@ public class KakaoAppService {
         kakaoAppRepository.save(kakaoApp);
         log.info("카카오 앱 등록 성공 : {} - {}, 등록시도 회원 : {}", kakaoApp.getAppId(), kakaoApp.getAppName(), member.getId());
     }
+
+    public List<KakaoAppInfoResponse> getAppList() {
+        Member member = securityUtil.getRequestMember();
+        List<KakaoAppInfoResponse> byMemberApps = kakaoAppRepository.findByMember(member).stream().map(KakaoAppInfoResponse::of).toList();
+        log.info("카카오 앱 리스트 조회 : 조회 시도 회원 : {}", member.getId());
+        return byMemberApps;
+    }
+
 }
