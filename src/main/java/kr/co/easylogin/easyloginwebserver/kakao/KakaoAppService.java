@@ -59,7 +59,7 @@ public class KakaoAppService {
     public List<KakaoAppInfoResponse> getAppList() {
         Member member = securityUtil.getRequestMember();
         List<KakaoAppInfoResponse> byMemberApps = kakaoAppRepository.findByMember(member).stream().map(KakaoAppInfoResponse::of).toList();
-        log.info("카카오 앱 리스트 조회 : 조회 시도 회원 : {}", member.getId());
+        log.info("카카오 앱 리스트 조회 - 조회 시도 회원 : {}", member.getId());
         return byMemberApps;
     }
 
