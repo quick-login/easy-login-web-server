@@ -2,7 +2,6 @@ package kr.co.easylogin.easyloginwebserver.common.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -11,16 +10,15 @@ import kr.co.easylogin.easyloginwebserver.auth.LoginHistoryRepository;
 import kr.co.easylogin.easyloginwebserver.auth.value.LoginStatus;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
+import kr.co.easylogin.easyloginwebserver.common.security.userDetils.UserDetailsImpl;
 import kr.co.easylogin.easyloginwebserver.config.SecurityConfiguration;
 import kr.co.easylogin.easyloginwebserver.member.Member;
-import kr.co.easylogin.easyloginwebserver.member.MemberRepository;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.LoginRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -30,7 +28,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final ObjectMapper objectMapper;
     private final AuthenticationSuccessHandler loginSuccessHandler;
-    private final MemberRepository memberRepository;
     private final LoginHistoryRepository loginHistoryRepository;
 
     @PostConstruct
@@ -50,18 +47,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             Authentication authentication = getAuthenticationManager().authenticate(preAuthentication);
 
             if (authentication.isAuthenticated()) {
-                UserDetails principal = (UserDetails) authentication.getPrincipal();
-                String username = principal.getUsername();
-                Member member = memberRepository.findByEmail(username)
-                                                .orElseThrow(() -> new BusinessException(ResponseCode.USER_NOT_FOUND));
+                UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
+                Member member = principal.member();
 
                 LoginHistory loginHistory = new LoginHistory(member, getClientIP(request), LoginStatus.SUCCESS);
                 loginHistoryRepository.save(loginHistory);
             } else {
-                UserDetails principal = (UserDetails) authentication.getPrincipal();
-                String username = principal.getUsername();
-                Member member = memberRepository.findByEmail(username)
-                                                .orElseThrow(() -> new BusinessException(ResponseCode.USER_NOT_FOUND));
+                UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
+                Member member = principal.member();
 
                 LoginHistory loginHistory = new LoginHistory(member, getClientIP(request), LoginStatus.FAIL);
                 loginHistoryRepository.save(loginHistory);
@@ -101,8 +94,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
      * 로그인 실패시 처리 로직
      */
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
-        throws IOException, ServletException {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
         log.info("login failed message : {}", failed.getMessage());
         throw new BusinessException(ResponseCode.LOGIN_FAILED);
     }
