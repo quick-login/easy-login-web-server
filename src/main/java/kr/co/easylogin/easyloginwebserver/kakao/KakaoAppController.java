@@ -2,12 +2,14 @@ package kr.co.easylogin.easyloginwebserver.kakao;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import kr.co.easylogin.easyloginwebserver.kakao.request.ModifyKakaoAppRequest;
 import kr.co.easylogin.easyloginwebserver.kakao.request.RegisterKakaoAppRequest;
 import kr.co.easylogin.easyloginwebserver.kakao.response.KakaoAppDetailInfoResponse;
 import kr.co.easylogin.easyloginwebserver.kakao.response.KakaoAppInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,5 +37,10 @@ public class KakaoAppController {
     @GetMapping("/app/{appId:\\d+}")
     public KakaoAppDetailInfoResponse getKakaoApp(@PathVariable(name = "appId") Long appId) {
         return kakaoAppService.getAppDetailInfo(appId);
+    }
+
+    @PatchMapping("/app/{appId:\\d+}")
+    public KakaoAppDetailInfoResponse modifyApp(@PathVariable(name = "appId") Long appId, @RequestBody ModifyKakaoAppRequest request) {
+        return kakaoAppService.modifyAppInfo(appId, request);
     }
 }

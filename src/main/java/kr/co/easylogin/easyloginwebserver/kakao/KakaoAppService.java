@@ -4,6 +4,7 @@ import java.util.List;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.common.utils.SecurityUtil;
+import kr.co.easylogin.easyloginwebserver.kakao.request.ModifyKakaoAppRequest;
 import kr.co.easylogin.easyloginwebserver.kakao.request.RegisterKakaoAppRequest;
 import kr.co.easylogin.easyloginwebserver.kakao.response.KakaoAppDetailInfoResponse;
 import kr.co.easylogin.easyloginwebserver.kakao.response.KakaoAppInfoResponse;
@@ -72,6 +73,22 @@ public class KakaoAppService {
                                               .orElseThrow(() -> new BusinessException(ResponseCode.KAKAO_APP_NOT_FOUND));
 
         checkPermission(kakaoApp, member);
+        return KakaoAppDetailInfoResponse.of(kakaoApp);
+    }
+
+    /**
+     * 카카오 앱 정보 수정
+     */
+    @Transactional
+    public KakaoAppDetailInfoResponse modifyAppInfo(Long appId, ModifyKakaoAppRequest request) {
+        Member member = securityUtil.getRequestMember();
+        KakaoApp kakaoApp = kakaoAppRepository.findByAppId(appId)
+                                              .orElseThrow(() -> new BusinessException(ResponseCode.KAKAO_APP_NOT_FOUND));
+
+        checkPermission(kakaoApp, member);
+        kakaoApp.modifyAppInfo(request);
+        log.info("앱 정보 수정 완료 : {}, 수정 시도 회원 : {}", kakaoApp.getAppId(), member.getId());
+
         return KakaoAppDetailInfoResponse.of(kakaoApp);
     }
 
