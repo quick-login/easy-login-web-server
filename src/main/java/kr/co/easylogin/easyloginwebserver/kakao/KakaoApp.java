@@ -22,7 +22,7 @@ public class KakaoApp extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private Long appId;
 
     // 카카오에서는 최대 45글자인것같음

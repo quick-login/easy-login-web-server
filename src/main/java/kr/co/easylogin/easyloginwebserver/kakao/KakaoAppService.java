@@ -1,6 +1,5 @@
 package kr.co.easylogin.easyloginwebserver.kakao;
 
-import java.util.List;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.common.utils.SecurityUtil;
@@ -29,10 +28,17 @@ public class KakaoAppService {
     public void registerApp(RegisterKakaoBizAppRequest request) {
         Member member = securityUtil.getRequestMember();
         KakaoApp kakaoApp;
-        List<KakaoApp> kakaoAppList = kakaoAppRepository.findByMember(member);
-        if (kakaoAppList.size() >= member.getMaxKakaoAppCount()) {
+
+        Long registerAppCount = kakaoAppRepository.countByMember(member);
+        if (registerAppCount >= member.getMaxKakaoAppCount()) {
+            log.error("등록 가능한 앱의 수룰 초과했습니다, 등록시도 회원 : {}", member.getId());
             throw new BusinessException(ResponseCode.APP_REGISTRATION_LIMIT_EXCEEDED);
         }
+
+        kakaoAppRepository.findByAppId(request.getAppId()).ifPresent(app -> {
+            log.error("이미 등록된 앱 아이디 : {} - {}, 등록시도 회원 : {}", app.getAppId(), app.getAppName(), member.getId());
+            throw new BusinessException(ResponseCode.IS_PRESENT_KAKAO_APP);
+        });
 
         if (request.getRedirectUrl() == null || request.getRedirectUrl().isEmpty()) {
             kakaoApp = KakaoApp.of(member, request, baseRedirectUrl);
@@ -41,5 +47,6 @@ public class KakaoAppService {
         }
 
         kakaoAppRepository.save(kakaoApp);
+        log.info("카카오 앱 등록 성공 : {} - {}, 등록시도 회원 : {}", kakaoApp.getAppId(), kakaoApp.getAppName(), member.getId());
     }
 }
