@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import java.util.Objects;
 import kr.co.easylogin.easyloginwebserver.common.BaseEntity;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.ModifyRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.SignupRequest;
@@ -67,15 +68,30 @@ public class Member extends BaseEntity {
 
     public static Member of(SignupRequest request, String encryptPassword) {
         return Member.builder()
-            .email(request.getEmail())
-            .name(request.getName())
-            .password(encryptPassword)
-            .kakaoId(request.getKakaoId())
-            .build();
+                     .email(request.getEmail())
+                     .name(request.getName())
+                     .password(encryptPassword)
+                     .kakaoId(request.getKakaoId())
+                     .build();
     }
 
     public void modify(ModifyRequest request, String encPassword) {
         this.name = request.getName();
         this.password = encPassword;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Member member = (Member) o;
+        return Objects.equals(email, member.email) && Objects.equals(name, member.name) && Objects.equals(
+            password, member.password) && role == member.role && Objects.equals(kakaoId, member.kakaoId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email, name, password, role, kakaoId);
     }
 }

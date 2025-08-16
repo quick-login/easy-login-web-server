@@ -5,6 +5,7 @@ import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.common.utils.SecurityUtil;
 import kr.co.easylogin.easyloginwebserver.kakao.request.RegisterKakaoAppRequest;
+import kr.co.easylogin.easyloginwebserver.kakao.response.KakaoAppDetailInfoResponse;
 import kr.co.easylogin.easyloginwebserver.kakao.response.KakaoAppInfoResponse;
 import kr.co.easylogin.easyloginwebserver.member.Member;
 import lombok.RequiredArgsConstructor;
@@ -52,11 +53,33 @@ public class KakaoAppService {
         log.info("카카오 앱 등록 성공 : {} - {}, 등록시도 회원 : {}", kakaoApp.getAppId(), kakaoApp.getAppName(), member.getId());
     }
 
+    /**
+     * 등록된 카카오 앱 리스트 조회
+     */
     public List<KakaoAppInfoResponse> getAppList() {
         Member member = securityUtil.getRequestMember();
         List<KakaoAppInfoResponse> byMemberApps = kakaoAppRepository.findByMember(member).stream().map(KakaoAppInfoResponse::of).toList();
         log.info("카카오 앱 리스트 조회 : 조회 시도 회원 : {}", member.getId());
         return byMemberApps;
+    }
+
+    /**
+     * 카카오 앱 상세 조회
+     */
+    public KakaoAppDetailInfoResponse getAppDetailInfo(Long appId) {
+        Member member = securityUtil.getRequestMember();
+        KakaoApp kakaoApp = kakaoAppRepository.findByAppId(appId)
+                                              .orElseThrow(() -> new BusinessException(ResponseCode.KAKAO_APP_NOT_FOUND));
+
+        checkPermission(kakaoApp, member);
+        return KakaoAppDetailInfoResponse.of(kakaoApp);
+    }
+
+    private void checkPermission(KakaoApp kakaoApp, Member member) {
+        if (!kakaoApp.getMember().equals(member)) {
+            log.info("조회권한이 없는 앱 조회 : {}, 조회시도 회원 : {}", kakaoApp.getAppId(), member.getId());
+            throw new BusinessException(ResponseCode.KAKAO_APP_FORBIDDEN);
+        }
     }
 
 }

@@ -25,6 +25,8 @@ public enum ResponseCode {
     // 카카오 앱 에러
     APP_REGISTRATION_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "K2000", "등록 가능한 앱 가능 수를 초과하였습니다."),
     IS_PRESENT_KAKAO_APP(HttpStatus.BAD_REQUEST, "K2001", "이지로그인에 이미 등록되어있는 앱입니다. 관리자에게 문의해주세요"),
+    KAKAO_APP_NOT_FOUND(HttpStatus.NOT_FOUND, "K2002", "등록된 앱을 찾을 수 없습니다."),
+    KAKAO_APP_FORBIDDEN(HttpStatus.FORBIDDEN, "K2003", "해당 앱에 접근할 수 있는 권한이 없습니다."),
 
     // 사용자 입력 에러
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "E4000", "유효하지 않은 입력값입니다."),
