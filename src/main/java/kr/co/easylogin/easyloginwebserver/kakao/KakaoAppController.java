@@ -32,7 +32,7 @@ public class KakaoAppController {
         return kakaoAppService.getAppList();
     }
 
-    @GetMapping("/app/{appId}")
+    @GetMapping("/app/{appId:\\d+}")
     public KakaoAppDetailInfoResponse getKakaoApp(@PathVariable(name = "appId") Long appId) {
         return kakaoAppService.getAppDetailInfo(appId);
     }
