@@ -40,7 +40,8 @@ public class KakaoAppController {
     }
 
     @PatchMapping("/app/{appId:\\d+}")
-    public KakaoAppDetailInfoResponse modifyApp(@PathVariable(name = "appId") Long appId, @RequestBody ModifyKakaoAppRequest request) {
+    public KakaoAppDetailInfoResponse modifyApp(@PathVariable(name = "appId") Long appId,
+                                                @Valid @RequestBody ModifyKakaoAppRequest request) {
         return kakaoAppService.modifyAppInfo(appId, request);
     }
 }
