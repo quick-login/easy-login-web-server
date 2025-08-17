@@ -14,7 +14,6 @@ import kr.co.easylogin.easyloginwebserver.common.security.provider.AccessTokenAu
 import kr.co.easylogin.easyloginwebserver.common.security.provider.RefreshTokenAuthenticationProvider;
 import kr.co.easylogin.easyloginwebserver.common.security.provider.UsernamePasswordAuthenticationProvider;
 import kr.co.easylogin.easyloginwebserver.common.utils.RedisUtil;
-import kr.co.easylogin.easyloginwebserver.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -76,8 +75,8 @@ public class SecurityConfiguration {
 
     @Bean
     public LoginFilter loginFilter(ObjectMapper objectMapper, AuthenticationSuccessHandler loginSuccessHandler,
-                                   MemberRepository memberRepository, LoginHistoryRepository loginHistoryRepository) {
-        LoginFilter filter = new LoginFilter(objectMapper, loginSuccessHandler, memberRepository, loginHistoryRepository);
+                                   LoginHistoryRepository loginHistoryRepository) {
+        LoginFilter filter = new LoginFilter(objectMapper, loginSuccessHandler, loginHistoryRepository);
         filter.setAuthenticationManager(authenticationManager());
         return filter;
     }
@@ -92,10 +91,10 @@ public class SecurityConfiguration {
         return new ExceptionFilter(objectMapper);
     }
 
-    @Bean
-    public AuthFilter jwtAuthFilter() {
-        return new AuthFilter(authenticationManager());
-    }
+//    @Bean
+//    public AuthFilter jwtAuthFilter() {
+//        return new AuthFilter(authenticationManager());
+//    }
 
     @Bean
     public SecurityFilterChain filterChain(

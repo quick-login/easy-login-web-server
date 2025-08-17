@@ -4,14 +4,10 @@ import java.util.Collection;
 import java.util.List;
 import kr.co.easylogin.easyloginwebserver.member.Member;
 import kr.co.easylogin.easyloginwebserver.member.value.MemberRole;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@RequiredArgsConstructor
-public class UserDetailsImpl implements UserDetails {
-
-    private final Member member;
+public record UserDetailsImpl(Member member) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
