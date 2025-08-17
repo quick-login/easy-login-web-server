@@ -11,7 +11,6 @@ import kr.co.easylogin.easyloginwebserver.kakao.response.KakaoAppInfoResponse;
 import kr.co.easylogin.easyloginwebserver.member.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,10 +22,6 @@ public class KakaoAppService {
 
     private final KakaoAppRepository kakaoAppRepository;
     private final SecurityUtil securityUtil;
-
-    // 앱 등록시 리다이렉트 url이 null 이면 베이스 url 넣도록 수정
-    @Value("${easylogin.base.redirectUrl}")
-    private String baseRedirectUrl;
 
     @Transactional
     public void registerApp(RegisterKakaoAppRequest request) {
@@ -44,11 +39,7 @@ public class KakaoAppService {
             throw new BusinessException(ResponseCode.IS_PRESENT_KAKAO_APP);
         });
 
-        if (request.getRedirectUrl() == null || request.getRedirectUrl().isEmpty()) {
-            kakaoApp = KakaoApp.of(member, request, baseRedirectUrl);
-        } else {
-            kakaoApp = KakaoApp.of(member, request);
-        }
+        kakaoApp = KakaoApp.of(member, request);
 
         kakaoAppRepository.save(kakaoApp);
         log.info("카카오 앱 등록 성공 : {} - {}, 등록시도 회원 : {}", kakaoApp.getAppId(), kakaoApp.getAppName(), member.getId());

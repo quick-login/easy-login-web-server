@@ -47,16 +47,6 @@ public class KakaoApp extends BaseEntity {
         this.redirectUrl = redirectUrl;
     }
 
-    public static KakaoApp of(Member member, RegisterKakaoAppRequest request, String redirectUrl) {
-        return KakaoApp.builder()
-                       .member(member)
-                       .appId(request.getAppId())
-                       .appName(request.getAppName())
-                       .restKey(request.getRestKey())
-                       .redirectUrl(redirectUrl)
-                       .build();
-    }
-
     public static KakaoApp of(Member member, RegisterKakaoAppRequest request) {
         return KakaoApp.builder()
                        .member(member)
