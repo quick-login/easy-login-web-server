@@ -30,6 +30,8 @@ public enum ResponseCode {
 
     // 사용자 입력 에러
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "E4000", "유효하지 않은 입력값입니다."),
+    MINIMUM_AMOUNT_ERROR(HttpStatus.BAD_REQUEST, "E4001", "최소 충전금액 미달입니다."),
+    AMOUNT_NOT_MULTIPLE_OF_100(HttpStatus.BAD_REQUEST, "E4002", "충전금액은 100원 단위로 입력해야 합니다."),
 
     // 서버 에러
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E5000", "정의되지않은 서버 에러"),
