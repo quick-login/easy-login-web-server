@@ -1,5 +1,7 @@
 package kr.co.easylogin.easyloginwebserver.cash;
 
+import java.util.HashMap;
+import java.util.Map;
 import kr.co.easylogin.easyloginwebserver.cash.dto.request.CashChargeRequest;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
@@ -7,8 +9,10 @@ import kr.co.easylogin.easyloginwebserver.common.utils.SecurityUtil;
 import kr.co.easylogin.easyloginwebserver.member.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
 
 @Service
 @Slf4j
@@ -18,6 +22,10 @@ public class CashService {
 
     private final CashChargeLogRepository cashChargeLogRepository;
     private final SecurityUtil securityUtil;
+    private final RestClient restClient;
+
+    @Value("${slack.url.cash}")
+    private String slackCash;
 
     public void chargeRequest(CashChargeRequest request) {
         Member requestMember = securityUtil.getRequestMember();
@@ -25,6 +33,29 @@ public class CashService {
         validationAmount(request.getChargeCash());
         CashChargeLog cashChargeLog = CashChargeLog.of(requestMember, request);
         cashChargeLogRepository.save(cashChargeLog);
+
+        sendSlackCashRequest(cashChargeLog);
+    }
+
+    /**
+     * 충전내용 슬랙발송
+     */
+    private void sendSlackCashRequest(CashChargeLog cashChargeLog) {
+        Member requestMember = cashChargeLog.getMember();
+
+        String text = "[알림] 캐시 충전신청이 도착했습니다."
+            + "\n회원번호 : " + requestMember.getId() + " / 회원 명 : " + requestMember.getName()
+            + "\n충전금액 : " + cashChargeLog.getChargeCash()
+            + "\n충전신청 일시 : " + cashChargeLog.getCreatedAt();
+
+        Map<String, String> payload = new HashMap<>();
+        payload.put("text", text);
+
+        restClient.post()
+                  .uri(slackCash)
+                  .body(payload)
+                  .retrieve()
+                  .body(String.class);
     }
 
     private void validationAmount(Long chargeCash) {
