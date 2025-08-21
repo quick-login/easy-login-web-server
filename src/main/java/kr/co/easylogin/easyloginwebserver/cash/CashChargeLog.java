@@ -34,6 +34,7 @@ public class CashChargeLog extends BaseEntity {
 
     @Builder
     protected CashChargeLog(Member member, Long chargeCash) {
+        this();
         this.member = member;
         this.chargeCash = chargeCash;
     }
