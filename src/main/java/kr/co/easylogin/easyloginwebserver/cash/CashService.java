@@ -1,5 +1,7 @@
 package kr.co.easylogin.easyloginwebserver.cash;
 
+import java.text.DecimalFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import kr.co.easylogin.easyloginwebserver.cash.dto.request.CashChargeRequest;
@@ -44,10 +46,18 @@ public class CashService {
     private void sendSlackCashRequest(CashChargeLog cashChargeLog) {
         Member requestMember = cashChargeLog.getMember();
 
+        // 금액 포맷팅 (천단위 쉼표)
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        String formattedCash = decimalFormat.format(cashChargeLog.getChargeCash());
+
+        // 날짜 포맷팅 (예: 2025-08-21 15:53:00)
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = cashChargeLog.getCreatedAt().format(dateFormatter);
+
         String text = "[알림] 캐시 충전신청이 도착했습니다."
             + "\n회원번호 : " + requestMember.getId() + " / 회원 명 : " + requestMember.getName()
-            + "\n충전금액 : " + cashChargeLog.getChargeCash()
-            + "\n충전신청 일시 : " + cashChargeLog.getCreatedAt();
+            + "\n충전금액 : " + formattedCash + "원"
+            + "\n충전신청 일시 : " + formattedDate;
 
         Map<String, String> payload = new HashMap<>();
         payload.put("text", text);
@@ -81,7 +91,7 @@ public class CashService {
 
         checkPermission(cashChargeLog, requestMember);
         checkStatus(cashChargeLog);
-        
+
         cashChargeLog.chargeCancel();
     }
 
