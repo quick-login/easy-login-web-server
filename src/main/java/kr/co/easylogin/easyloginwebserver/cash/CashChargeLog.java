@@ -45,4 +45,8 @@ public class CashChargeLog extends BaseEntity {
                             .chargeCash(request.getChargeCash())
                             .build();
     }
+
+    public void chargeCancel() {
+        this.status = CashChargeStatus.CANCELED;
+    }
 }

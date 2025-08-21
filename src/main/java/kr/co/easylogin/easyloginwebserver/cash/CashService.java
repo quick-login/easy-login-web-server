@@ -3,6 +3,7 @@ package kr.co.easylogin.easyloginwebserver.cash;
 import java.util.HashMap;
 import java.util.Map;
 import kr.co.easylogin.easyloginwebserver.cash.dto.request.CashChargeRequest;
+import kr.co.easylogin.easyloginwebserver.cash.value.CashChargeStatus;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.common.utils.SecurityUtil;
@@ -66,6 +67,40 @@ public class CashService {
         if (chargeCash % 100 != 0) {
             log.error("충전 단위 오류 : {}", chargeCash);
             throw new BusinessException(ResponseCode.AMOUNT_NOT_MULTIPLE_OF_100);
+        }
+    }
+
+    /**
+     * 캐시 충전 취소
+     */
+    @Transactional
+    public void cancelChargeRequest(Long id) {
+        Member requestMember = securityUtil.getRequestMember();
+        CashChargeLog cashChargeLog = cashChargeLogRepository.findById(id)
+                                                             .orElseThrow(() -> new BusinessException(ResponseCode.CASH_LOG_NOT_FOUND));
+
+        checkPermission(cashChargeLog, requestMember);
+        checkStatus(cashChargeLog);
+        
+        cashChargeLog.chargeCancel();
+    }
+
+    /**
+     * 로그 회원 검사
+     */
+    private void checkPermission(CashChargeLog cashChargeLog, Member member) {
+        if (!cashChargeLog.getMember().equals(member)) {
+            log.info("조회권한이 없는 캐시 로그 조회 : {}, 조회시도 회원 : {}", cashChargeLog.getId(), member.getId());
+            throw new BusinessException(ResponseCode.API_FORBIDDEN);
+        }
+    }
+
+    /**
+     * 변경 가능한 상태인지 검사
+     */
+    private void checkStatus(CashChargeLog cashChargeLog) {
+        if (cashChargeLog.getStatus() != CashChargeStatus.REQUEST) {
+            throw new BusinessException(ResponseCode.CHANGE_STATUS_NOT_ALLOWED);
         }
     }
 }
