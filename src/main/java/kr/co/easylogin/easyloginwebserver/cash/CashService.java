@@ -132,9 +132,20 @@ public class CashService {
             cashChargeLogRepository.findByMemberIdAndStatusNot(member.getId(), CashChargeStatus.HIDDEN, pageRequest);
 
         pageDto.updateTotalPagesAndElements(resultLogs);
+        checkCurrentPage(pageDto);
+        log.info("캐시충전 리스트 조회 - 조회 회원 : {}", member.getId());
 
         return resultLogs.stream()
                          .map(CashChargeInfoResponse::of)
                          .toList();
+    }
+
+    /**
+     * 페이지 유효성 검증
+     */
+    private void checkCurrentPage(PageDto pageDto) {
+        if (pageDto.getCurrentPage() > pageDto.getTotalPages()) {
+            throw new BusinessException(ResponseCode.INVALID_PAGE_ERROR);
+        }
     }
 }
