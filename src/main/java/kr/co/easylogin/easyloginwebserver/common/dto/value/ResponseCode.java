@@ -35,6 +35,7 @@ public enum ResponseCode {
     API_FORBIDDEN(HttpStatus.FORBIDDEN, "E4003", "조회 및 호출 권한이 없습니다."),
     CASH_LOG_NOT_FOUND(HttpStatus.NOT_FOUND, "E4004", "캐시 충전 로그를 찾을 수 없습니다."),
     CHANGE_STATUS_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "E4005", "변경 가능한 상태가 아닙니다."),
+    INVALID_PAGE_ERROR(HttpStatus.BAD_REQUEST, "E4006", "유효하지 않은 페이지 정보"),
 
     // 서버 에러
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E5000", "정의되지않은 서버 에러"),
