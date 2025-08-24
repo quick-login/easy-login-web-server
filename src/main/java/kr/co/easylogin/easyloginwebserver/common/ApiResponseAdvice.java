@@ -1,5 +1,6 @@
 package kr.co.easylogin.easyloginwebserver.common;
 
+import kr.co.easylogin.easyloginwebserver.common.dto.PageResponseDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.ResponseDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import org.springframework.core.MethodParameter;
@@ -18,8 +19,8 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
      */
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        // 이미 ResponseDto로 감싸진 경우는 제외
-        return !returnType.getParameterType().equals(ResponseDto.class);
+        // 이미 ResponseDto로 감싸진 경우는 제외 + PageResponseDto로 감싸진 경우도 제외
+        return !returnType.getParameterType().equals(ResponseDto.class) && !returnType.getParameterType().equals(PageResponseDto.class);
     }
 
     @Override
