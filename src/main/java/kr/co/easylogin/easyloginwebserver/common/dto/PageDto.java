@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import lombok.Getter;
+import org.springframework.data.domain.Page;
 
 @Getter
 @JsonPropertyOrder({"currentPage", "pageSize", "totalElements", "totalPages"})
@@ -28,11 +29,8 @@ public class PageDto {
         return new PageDto(currentPage, pageSize, 1, 1);
     }
 
-    public void updateTotalPages(int totalPages) {
-        this.totalPages = totalPages;
-    }
-
-    public void updateTotalElements(long totalElements) {
-        this.totalElements = totalElements;
+    public <T> void updateTotalPagesAndElements(Page<T> pageEntity) {
+        this.totalPages = pageEntity.getTotalPages();
+        this.totalElements = pageEntity.getTotalElements();
     }
 }

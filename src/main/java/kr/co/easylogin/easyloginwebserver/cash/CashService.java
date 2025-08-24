@@ -3,9 +3,12 @@ package kr.co.easylogin.easyloginwebserver.cash;
 import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import kr.co.easylogin.easyloginwebserver.cash.dto.request.CashChargeRequest;
+import kr.co.easylogin.easyloginwebserver.cash.dto.response.CashChargeInfoResponse;
 import kr.co.easylogin.easyloginwebserver.cash.value.CashChargeStatus;
+import kr.co.easylogin.easyloginwebserver.common.dto.PageDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.common.utils.SecurityUtil;
@@ -13,6 +16,10 @@ import kr.co.easylogin.easyloginwebserver.member.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
@@ -55,9 +62,9 @@ public class CashService {
         String formattedDate = cashChargeLog.getCreatedAt().format(dateFormatter);
 
         String text = "[알림] 캐시 충전신청이 도착했습니다."
-            + "\n회원번호 : " + requestMember.getId() + " / 회원 명 : " + requestMember.getName()
-            + "\n충전금액 : " + formattedCash + "원"
-            + "\n충전신청 일시 : " + formattedDate;
+                      + "\n회원번호 : " + requestMember.getId() + " / 회원 명 : " + requestMember.getName()
+                      + "\n충전금액 : " + formattedCash + "원"
+                      + "\n충전신청 일시 : " + formattedDate;
 
         Map<String, String> payload = new HashMap<>();
         payload.put("text", text);
@@ -112,5 +119,22 @@ public class CashService {
         if (cashChargeLog.getStatus() != CashChargeStatus.REQUEST) {
             throw new BusinessException(ResponseCode.CHANGE_STATUS_NOT_ALLOWED);
         }
+    }
+
+    /**
+     * 캐시 충전 로그 리스트 조회
+     */
+    public List<CashChargeInfoResponse> getCashChargeLogList(PageDto pageDto) {
+        Member member = securityUtil.getRequestMember();
+        PageRequest pageRequest = PageRequest.of(pageDto.getCurrentPage() - 1, pageDto.getPageSize(), Sort.by(Order.desc("createdAt")));
+
+        Page<CashChargeLog> resultLogs =
+            cashChargeLogRepository.findByMemberIdAndStatusNot(member.getId(), CashChargeStatus.HIDDEN, pageRequest);
+
+        pageDto.updateTotalPagesAndElements(resultLogs);
+
+        return resultLogs.stream()
+                         .map(CashChargeInfoResponse::of)
+                         .toList();
     }
 }
