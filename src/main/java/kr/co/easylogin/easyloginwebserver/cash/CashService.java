@@ -145,6 +145,7 @@ public class CashService {
      */
     private void checkCurrentPage(PageDto pageDto) {
         if (pageDto.getCurrentPage() > pageDto.getTotalPages()) {
+            log.error("페이지 유효성 검증 실패 - 입력 페이지 : {}, 토탈 페이지 : {}", pageDto.getCurrentPage(), pageDto.getTotalPages());
             throw new BusinessException(ResponseCode.INVALID_PAGE_ERROR);
         }
     }
