@@ -30,6 +30,12 @@ public enum ResponseCode {
 
     // 사용자 입력 에러
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "E4000", "유효하지 않은 입력값입니다."),
+    MINIMUM_AMOUNT_ERROR(HttpStatus.BAD_REQUEST, "E4001", "최소 충전금액 미달입니다."),
+    AMOUNT_NOT_MULTIPLE_OF_100(HttpStatus.BAD_REQUEST, "E4002", "충전금액은 100원 단위로 입력해야 합니다."),
+    API_FORBIDDEN(HttpStatus.FORBIDDEN, "E4003", "조회 및 호출 권한이 없습니다."),
+    CASH_LOG_NOT_FOUND(HttpStatus.NOT_FOUND, "E4004", "캐시 충전 로그를 찾을 수 없습니다."),
+    CHANGE_STATUS_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "E4005", "변경 가능한 상태가 아닙니다."),
+    INVALID_PAGE_ERROR(HttpStatus.BAD_REQUEST, "E4006", "유효하지 않은 페이지 정보"),
 
     // 서버 에러
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E5000", "정의되지않은 서버 에러"),
