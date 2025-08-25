@@ -30,7 +30,12 @@ public class PageDto {
     }
 
     public <T> void updateTotalPagesAndElements(Page<T> pageEntity) {
-        this.totalPages = pageEntity.getTotalPages();
-        this.totalElements = pageEntity.getTotalElements();
+        if (pageEntity.getTotalPages() <= 0 && pageEntity.getTotalElements() <= 0) {
+            this.totalPages = 1;
+            this.totalElements = 0;
+        } else {
+            this.totalPages = pageEntity.getTotalPages();
+            this.totalElements = pageEntity.getTotalElements();
+        }
     }
 }
