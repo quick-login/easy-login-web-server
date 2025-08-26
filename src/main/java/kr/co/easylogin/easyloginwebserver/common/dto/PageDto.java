@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 
 @Getter
+@Slf4j
 @JsonPropertyOrder({"currentPage", "pageSize", "totalElements", "totalPages"})
 public class PageDto {
 
@@ -36,6 +38,16 @@ public class PageDto {
         } else {
             this.totalPages = pageEntity.getTotalPages();
             this.totalElements = pageEntity.getTotalElements();
+        }
+    }
+
+    /**
+     * 페이지 유효성 검증
+     */
+    public void checkCurrentPage() {
+        if (this.currentPage > this.totalPages) {
+            log.error("페이지 유효성 검증 실패 - 입력 페이지 : {}, 토탈 페이지 : {}", this.currentPage, this.totalPages);
+            throw new BusinessException(ResponseCode.INVALID_PAGE_ERROR);
         }
     }
 }

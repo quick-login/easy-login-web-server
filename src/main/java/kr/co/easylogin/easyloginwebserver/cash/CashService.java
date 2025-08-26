@@ -62,9 +62,9 @@ public class CashService {
         String formattedDate = cashChargeLog.getCreatedAt().format(dateFormatter);
 
         String text = "[알림] 캐시 충전신청이 도착했습니다."
-                      + "\n회원번호 : " + requestMember.getId() + " / 회원 명 : " + requestMember.getName()
-                      + "\n충전금액 : " + formattedCash + "원"
-                      + "\n충전신청 일시 : " + formattedDate;
+            + "\n회원번호 : " + requestMember.getId() + " / 회원 명 : " + requestMember.getName()
+            + "\n충전금액 : " + formattedCash + "원"
+            + "\n충전신청 일시 : " + formattedDate;
 
         Map<String, String> payload = new HashMap<>();
         payload.put("text", text);
@@ -132,21 +132,12 @@ public class CashService {
             cashChargeLogRepository.findByMemberIdAndStatusNot(member.getId(), CashChargeStatus.HIDDEN, pageRequest);
 
         pageDto.updateTotalPagesAndElements(resultLogs);
-        checkCurrentPage(pageDto);
+        pageDto.checkCurrentPage();
+
         log.info("캐시충전 리스트 조회 - 조회 회원 : {}", member.getId());
 
         return resultLogs.stream()
                          .map(CashChargeInfoResponse::of)
                          .toList();
-    }
-
-    /**
-     * 페이지 유효성 검증
-     */
-    private void checkCurrentPage(PageDto pageDto) {
-        if (pageDto.getCurrentPage() > pageDto.getTotalPages()) {
-            log.error("페이지 유효성 검증 실패 - 입력 페이지 : {}, 토탈 페이지 : {}", pageDto.getCurrentPage(), pageDto.getTotalPages());
-            throw new BusinessException(ResponseCode.INVALID_PAGE_ERROR);
-        }
     }
 }
