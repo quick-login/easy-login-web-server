@@ -4,7 +4,7 @@ import java.util.List;
 import kr.co.easylogin.easyloginwebserver.common.dto.PageDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.PageResponseDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
-import kr.co.easylogin.easyloginwebserver.product.dto.ProductInfoResponse;
+import kr.co.easylogin.easyloginwebserver.product.dto.response.ProductInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,4 +1,4 @@
-package kr.co.easylogin.easyloginwebserver.product.dto;
+package kr.co.easylogin.easyloginwebserver.product.dto.response;
 
 import kr.co.easylogin.easyloginwebserver.product.domain.Product;
 import lombok.Builder;
