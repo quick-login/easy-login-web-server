@@ -61,7 +61,11 @@ public class Product extends BaseEntity {
                       .build();
     }
 
-    public void updatedStatus(ProductStatus status) {
-        this.status = status;
+    public void changeStatus() {
+        if (this.status.equals(ProductStatus.SALE)) {
+            this.status = ProductStatus.STOP;
+        } else if (this.status.equals(ProductStatus.STOP)) {
+            this.status = ProductStatus.SALE;
+        }
     }
 }

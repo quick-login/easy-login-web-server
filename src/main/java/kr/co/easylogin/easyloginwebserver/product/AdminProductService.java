@@ -31,6 +31,7 @@ public class AdminProductService {
     /**
      * 상품 등록
      */
+    @Transactional
     public void initProduct(InitProductRequest request) {
         Product product = Product.of(request);
         checkDiscountRate(product);
@@ -64,4 +65,28 @@ public class AdminProductService {
                        .map(DetailProductInfoResponse::of)
                        .toList();
     }
+
+    /**
+     * 상품 상태변경
+     * 판매중 <=> 판매 중지
+     */
+    @Transactional
+    public DetailProductInfoResponse changeStatus(Long id) {
+        Product product = productRepository.findById(id)
+                                           .orElseThrow(() -> new BusinessException(ResponseCode.PRODUCT_NOT_FOUND));
+        checkDeletedProduct(product);
+        product.changeStatus();
+        return DetailProductInfoResponse.of(product);
+    }
+
+    /**
+     * 삭제된 상품이면 상호작용 금지
+     */
+    private void checkDeletedProduct(Product product) {
+        if (product.getStatus().equals(ProductStatus.DELETED)) {
+            throw new BusinessException(ResponseCode.DELETED_PRODUCT);
+        }
+    }
+
+
 }
