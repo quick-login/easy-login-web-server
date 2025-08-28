@@ -1,13 +1,21 @@
 package kr.co.easylogin.easyloginwebserver.product;
 
+import java.util.List;
+import kr.co.easylogin.easyloginwebserver.common.dto.PageDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.common.utils.SecurityUtil;
 import kr.co.easylogin.easyloginwebserver.member.Member;
 import kr.co.easylogin.easyloginwebserver.product.domain.Product;
 import kr.co.easylogin.easyloginwebserver.product.dto.request.InitProductRequest;
+import kr.co.easylogin.easyloginwebserver.product.dto.response.DetailProductInfoResponse;
+import kr.co.easylogin.easyloginwebserver.product.value.ProductStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,5 +48,20 @@ public class AdminProductService {
         if (product.getDiscountRate() < 0 || product.getDiscountRate() > 100) {
             throw new BusinessException(ResponseCode.INVALID_DISCOUNT_RATE);
         }
+    }
+
+    /**
+     * 관리자 화면 상품 리스트 조회
+     */
+    public List<DetailProductInfoResponse> getProductList(PageDto pageDto) {
+        PageRequest pageRequest = PageRequest.of(pageDto.getCurrentPage() - 1, pageDto.getPageSize(), Sort.by(Order.asc("name")));
+        Page<Product> products = productRepository.findByStatusNot(ProductStatus.DELETED, pageRequest);
+
+        pageDto.updateTotalPagesAndElements(products);
+        pageDto.checkCurrentPage();
+
+        return products.stream()
+                       .map(DetailProductInfoResponse::of)
+                       .toList();
     }
 }
