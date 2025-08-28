@@ -6,17 +6,15 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import kr.co.easylogin.easyloginwebserver.common.BaseEntity;
 import kr.co.easylogin.easyloginwebserver.product.dto.request.InitProductRequest;
+import kr.co.easylogin.easyloginwebserver.product.value.ProductStatus;
 import kr.co.easylogin.easyloginwebserver.product.value.ProductType;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Slf4j
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product extends BaseEntity {
 
     @Column(nullable = false, length = 50)
@@ -34,8 +32,17 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Long value;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ProductStatus status;
+
+    protected Product() {
+        this.status = ProductStatus.SALE;
+    }
+
     @Builder
-    public Product(String name, Long price, Long discountRate, ProductType productType, Long value) {
+    protected Product(String name, Long price, Long discountRate, ProductType productType, Long value) {
+        this();
         this.name = name;
         this.price = price;
         this.discountRate = discountRate;
@@ -44,7 +51,6 @@ public class Product extends BaseEntity {
     }
 
     @Builder
-
     public static Product of(InitProductRequest request) {
         return Product.builder()
                       .name(request.getName())
@@ -53,5 +59,9 @@ public class Product extends BaseEntity {
                       .productType(request.getType())
                       .value(request.getValue())
                       .build();
+    }
+
+    public void updatedStatus(ProductStatus status) {
+        this.status = status;
     }
 }
