@@ -88,5 +88,15 @@ public class AdminProductService {
         }
     }
 
-
+    /**
+     * 상품 삭제
+     */
+    @Transactional
+    public Product deleteProduct(Long id) {
+        Product product = productRepository.findById(id)
+                                           .orElseThrow(() -> new BusinessException(ResponseCode.PRODUCT_NOT_FOUND));
+        checkDeletedProduct(product);
+        product.delete();
+        return product;
+    }
 }

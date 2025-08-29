@@ -68,4 +68,8 @@ public class Product extends BaseEntity {
             this.status = ProductStatus.SALE;
         }
     }
+
+    public void delete() {
+        this.status = ProductStatus.DELETED;
+    }
 }

@@ -5,10 +5,12 @@ import java.util.List;
 import kr.co.easylogin.easyloginwebserver.common.dto.PageDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.PageResponseDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
+import kr.co.easylogin.easyloginwebserver.product.domain.Product;
 import kr.co.easylogin.easyloginwebserver.product.dto.request.InitProductRequest;
 import kr.co.easylogin.easyloginwebserver.product.dto.response.DetailProductInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,5 +49,11 @@ public class AdminProductController {
         DetailProductInfoResponse detailProductInfoResponse = adminProductService.changeStatus(id);
         log.info("상품 상태 변경 : {} - {}", detailProductInfoResponse.productId(), detailProductInfoResponse.status());
         return detailProductInfoResponse;
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable(name = "id") Long id) {
+        Product product = adminProductService.deleteProduct(id);
+        log.info("상품 삭제 : {}", product.getId());
     }
 }
