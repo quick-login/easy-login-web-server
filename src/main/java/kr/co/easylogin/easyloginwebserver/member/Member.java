@@ -80,6 +80,10 @@ public class Member extends BaseEntity {
         this.password = encPassword;
     }
 
+    public void increaseCash(Long cash) {
+        this.cash += cash;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {

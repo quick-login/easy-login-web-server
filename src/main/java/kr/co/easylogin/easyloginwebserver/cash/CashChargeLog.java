@@ -49,4 +49,12 @@ public class CashChargeLog extends BaseEntity {
     public void chargeCancel() {
         this.status = CashChargeStatus.CANCELED;
     }
+
+    /**
+     * 충전 승인시 해당 금액만큼 회원 cash 증가
+     */
+    public void approveCash(Member member) {
+        member.increaseCash(this.chargeCash);
+        this.status = CashChargeStatus.CHARGE_COMPLETED;
+    }
 }

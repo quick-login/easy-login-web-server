@@ -8,6 +8,8 @@ import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,5 +30,10 @@ public class AdminCashController {
         PageDto pageDto = PageDto.of(page, pageSize);
         List<CashChargeDetailsInfoResponse> result = adminCashService.getChargeLogList(pageDto);
         return PageResponseDto.of(ResponseCode.SUCCESS, result, pageDto);
+    }
+
+    @PatchMapping("/approve/{id}")
+    public CashChargeDetailsInfoResponse approveCash(@PathVariable(name = "id") Long id) {
+        return adminCashService.approveCash(id);
     }
 }
