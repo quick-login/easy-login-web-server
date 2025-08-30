@@ -38,7 +38,7 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(value = Exception.class)
     public ResponseDto<Object> handleException(Exception exception) {
         response.setStatus(ResponseCode.SERVER_ERROR.getStatus().value());
-        log.error("정의되지않은 서버 오류 : {}", exception.toString());
+        log.error("정의되지않은 서버 오류 : {}", exception.toString(), exception);
         return ResponseDto.of(ResponseCode.SERVER_ERROR);
     }
 }
