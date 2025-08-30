@@ -57,4 +57,11 @@ public class CashChargeLog extends BaseEntity {
         member.increaseCash(this.chargeCash);
         this.status = CashChargeStatus.CHARGE_COMPLETED;
     }
+
+    /**
+     * 충전 거절
+     */
+    public void rejectCash() {
+        this.status = CashChargeStatus.REJECTED;
+    }
 }

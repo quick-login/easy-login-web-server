@@ -57,6 +57,22 @@ public class AdminCashService {
     }
 
     /**
+     * 캐시 충전 거절
+     */
+    @Transactional
+    public CashChargeDetailsInfoResponse rejectCash(Long id) {
+        CashChargeLog cashChargeLog = cashChargeLogRepository.findById(id)
+                                                             .orElseThrow(() -> new BusinessException(ResponseCode.CASH_LOG_NOT_FOUND));
+
+        checkCashLogStatus(cashChargeLog);
+        Member cashLogMember = cashChargeLog.getMember();
+        cashChargeLog.rejectCash();
+
+        log.info("{} 회원의 캐시충전이 거절되었습니다.", cashLogMember.getName());
+        return CashChargeDetailsInfoResponse.of(cashChargeLog);
+    }
+
+    /**
      * 충전 가능한 상태인지 체크
      */
     private void checkCashLogStatus(CashChargeLog cashChargeLog) {

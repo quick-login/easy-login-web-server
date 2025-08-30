@@ -36,4 +36,9 @@ public class AdminCashController {
     public CashChargeDetailsInfoResponse approveCash(@PathVariable(name = "id") Long id) {
         return adminCashService.approveCash(id);
     }
+
+    @PatchMapping("/reject/{id}")
+    public CashChargeDetailsInfoResponse rejectCash(@PathVariable(name = "id") Long id) {
+        return adminCashService.rejectCash(id);
+    }
 }
