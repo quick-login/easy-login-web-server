@@ -9,7 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import kr.co.easylogin.easyloginwebserver.common.BaseEntity;
 import kr.co.easylogin.easyloginwebserver.member.Member;
-import kr.co.easylogin.easyloginwebserver.question.dto.InitQuestionRequest;
+import kr.co.easylogin.easyloginwebserver.question.dto.request.InitQuestionRequest;
 import kr.co.easylogin.easyloginwebserver.question.value.QuestionStatus;
 import lombok.Builder;
 import lombok.Getter;

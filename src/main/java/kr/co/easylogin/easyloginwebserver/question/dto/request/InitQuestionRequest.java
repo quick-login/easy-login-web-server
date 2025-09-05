@@ -1,4 +1,4 @@
-package kr.co.easylogin.easyloginwebserver.question.dto;
+package kr.co.easylogin.easyloginwebserver.question.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

@@ -6,7 +6,7 @@ import kr.co.easylogin.easyloginwebserver.common.dto.PageDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.PageResponseDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.question.domain.Question;
-import kr.co.easylogin.easyloginwebserver.question.dto.InitQuestionRequest;
+import kr.co.easylogin.easyloginwebserver.question.dto.request.InitQuestionRequest;
 import kr.co.easylogin.easyloginwebserver.question.dto.response.QuestionListResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

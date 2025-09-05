@@ -7,7 +7,7 @@ import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.common.utils.SecurityUtil;
 import kr.co.easylogin.easyloginwebserver.member.Member;
 import kr.co.easylogin.easyloginwebserver.question.domain.Question;
-import kr.co.easylogin.easyloginwebserver.question.dto.InitQuestionRequest;
+import kr.co.easylogin.easyloginwebserver.question.dto.request.InitQuestionRequest;
 import kr.co.easylogin.easyloginwebserver.question.dto.response.QuestionListResponse;
 import kr.co.easylogin.easyloginwebserver.question.value.QuestionStatus;
 import lombok.RequiredArgsConstructor;
