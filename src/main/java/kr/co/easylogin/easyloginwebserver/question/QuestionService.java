@@ -2,11 +2,14 @@ package kr.co.easylogin.easyloginwebserver.question;
 
 import java.util.List;
 import kr.co.easylogin.easyloginwebserver.common.dto.PageDto;
+import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
+import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.common.utils.SecurityUtil;
 import kr.co.easylogin.easyloginwebserver.member.Member;
 import kr.co.easylogin.easyloginwebserver.question.domain.Question;
 import kr.co.easylogin.easyloginwebserver.question.dto.InitQuestionRequest;
 import kr.co.easylogin.easyloginwebserver.question.dto.response.QuestionListResponse;
+import kr.co.easylogin.easyloginwebserver.question.value.QuestionStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -55,5 +58,40 @@ public class QuestionService {
         return questions.stream()
                         .map(QuestionListResponse::of)
                         .toList();
+    }
+
+    /**
+     * 문의 취소하기
+     */
+    @Transactional
+    public Question cancelQuestion(Long id) {
+        Member member = securityUtil.getRequestMember();
+        Question question = questionRepository.findById(id)
+                                              .orElseThrow(() -> new BusinessException(ResponseCode.QUESTION_NOT_FOUND));
+
+        checkPermission(question, member);
+        checkStatus(question);
+
+        questionRepository.deleteById(id);
+        return question;
+    }
+
+    /**
+     * 문의 회원 검사
+     */
+    private void checkPermission(Question question, Member member) {
+        if (!question.getMember().equals(member)) {
+            log.info("조회권한이 없는 문의 조회 : {}, 조회시도 회원 : {}", question.getId(), member.getId());
+            throw new BusinessException(ResponseCode.API_FORBIDDEN);
+        }
+    }
+
+    /**
+     * 삭제 가능한 상태인지 검사
+     */
+    private void checkStatus(Question question) {
+        if (question.getStatus().equals(QuestionStatus.COMPLETED)) {
+            throw new BusinessException(ResponseCode.CHANGE_STATUS_NOT_ALLOWED);
+        }
     }
 }

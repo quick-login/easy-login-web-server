@@ -10,7 +10,9 @@ import kr.co.easylogin.easyloginwebserver.question.dto.InitQuestionRequest;
 import kr.co.easylogin.easyloginwebserver.question.dto.response.QuestionListResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,5 +42,11 @@ public class QuestionController {
         PageDto pageDto = PageDto.of(page, pageSize);
         List<QuestionListResponse> result = questionService.getQuestions(pageDto);
         return PageResponseDto.of(ResponseCode.SUCCESS, result, pageDto);
+    }
+
+    @DeleteMapping("/cancel/{id}")
+    public void cancel(@PathVariable(name = "id") Long id) {
+        Question question = questionService.cancelQuestion(id);
+        log.info("문의내역이 삭제되었습니다. 문의내역 ID : {}", question.getId());
     }
 }
