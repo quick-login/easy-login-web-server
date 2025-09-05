@@ -7,6 +7,7 @@ import lombok.Builder;
 
 @Builder
 public record QuestionListResponse(
+    Long questionId,
     String title,
     String content,
     QuestionStatus status,
@@ -15,6 +16,7 @@ public record QuestionListResponse(
 
     public static QuestionListResponse of(Question question) {
         return QuestionListResponse.builder()
+                                   .questionId(question.getId())
                                    .title(question.getTitle())
                                    .content(question.getContent())
                                    .status(question.getStatus())
