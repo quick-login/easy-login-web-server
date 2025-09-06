@@ -13,6 +13,7 @@ import kr.co.easylogin.easyloginwebserver.question.dto.response.AdminQuestionLis
 import kr.co.easylogin.easyloginwebserver.question.value.QuestionStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -55,7 +56,7 @@ public class AdminQuestionService {
                                     .orderBy(question.createdAt.desc())
                                     .fetchOne();
 
-        PageImpl<AdminQuestionListResponse> result = new PageImpl<>(questions, pageRequest, total);
+        Page<AdminQuestionListResponse> result = new PageImpl<>(questions, pageRequest, total);
         pageDto.updateTotalPagesAndElements(result);
 
         log.info("관리자 : 문의 내역 목록 조회 - 조회 관리자 : {}", member.getName());
