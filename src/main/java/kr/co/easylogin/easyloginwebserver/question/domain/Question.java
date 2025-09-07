@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import kr.co.easylogin.easyloginwebserver.common.BaseEntity;
 import kr.co.easylogin.easyloginwebserver.member.Member;
 import kr.co.easylogin.easyloginwebserver.question.dto.request.InitQuestionRequest;
@@ -32,6 +33,9 @@ public class Question extends BaseEntity {
 
     @Column(length = 1000)
     private String answer;
+
+    @Column(nullable = true)
+    private LocalDateTime answeredDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
