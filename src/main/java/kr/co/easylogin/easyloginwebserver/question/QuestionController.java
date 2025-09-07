@@ -7,6 +7,7 @@ import kr.co.easylogin.easyloginwebserver.common.dto.PageResponseDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.question.domain.Question;
 import kr.co.easylogin.easyloginwebserver.question.dto.request.InitQuestionRequest;
+import kr.co.easylogin.easyloginwebserver.question.dto.response.QuestionInfoResponse;
 import kr.co.easylogin.easyloginwebserver.question.dto.response.QuestionListResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,11 @@ public class QuestionController {
         PageDto pageDto = PageDto.of(page, pageSize);
         List<QuestionListResponse> result = questionService.getQuestions(pageDto);
         return PageResponseDto.of(ResponseCode.SUCCESS, result, pageDto);
+    }
+
+    @GetMapping("/{id}")
+    public QuestionInfoResponse getQuestionInfo(@PathVariable(name = "id") Long id) {
+        return questionService.getQuestionInfo(id);
     }
 
     @DeleteMapping("/cancel/{id}")

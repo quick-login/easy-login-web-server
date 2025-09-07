@@ -8,6 +8,7 @@ import kr.co.easylogin.easyloginwebserver.common.utils.SecurityUtil;
 import kr.co.easylogin.easyloginwebserver.member.Member;
 import kr.co.easylogin.easyloginwebserver.question.domain.Question;
 import kr.co.easylogin.easyloginwebserver.question.dto.request.InitQuestionRequest;
+import kr.co.easylogin.easyloginwebserver.question.dto.response.QuestionInfoResponse;
 import kr.co.easylogin.easyloginwebserver.question.dto.response.QuestionListResponse;
 import kr.co.easylogin.easyloginwebserver.question.value.QuestionStatus;
 import lombok.RequiredArgsConstructor;
@@ -74,6 +75,19 @@ public class QuestionService {
 
         questionRepository.deleteById(id);
         return question;
+    }
+
+    /**
+     * 문의 상세 내용 조회
+     */
+    public QuestionInfoResponse getQuestionInfo(Long id) {
+        Member member = securityUtil.getRequestMember();
+        Question question = questionRepository.findById(id)
+                                              .orElseThrow(() -> new BusinessException(ResponseCode.QUESTION_NOT_FOUND));
+
+        checkPermission(question, member);
+        log.info("문의 상세 내용 조회 {} : 조회 회원 - {} {}", question.getId(), member.getId(), member.getName());
+        return QuestionInfoResponse.of(question);
     }
 
     /**
