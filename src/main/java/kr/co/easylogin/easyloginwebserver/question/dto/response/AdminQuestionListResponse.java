@@ -12,7 +12,7 @@ public record AdminQuestionListResponse(
     String title,
     String content,
     QuestionStatus status,
-    LocalDateTime date
+    LocalDateTime questionDate
 ) {
 
     public static AdminQuestionListResponse of(Question question) {
@@ -22,7 +22,7 @@ public record AdminQuestionListResponse(
                                         .title(question.getTitle())
                                         .content(question.getContent())
                                         .status(question.getStatus())
-                                        .date(question.getCreatedAt())
+                                        .questionDate(question.getCreatedAt())
                                         .build();
     }
 }

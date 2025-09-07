@@ -11,7 +11,7 @@ public record QuestionListResponse(
     String title,
     String content,
     QuestionStatus status,
-    LocalDateTime date
+    LocalDateTime questionDate
 ) {
 
     public static QuestionListResponse of(Question question) {
@@ -20,7 +20,7 @@ public record QuestionListResponse(
                                    .title(question.getTitle())
                                    .content(question.getContent())
                                    .status(question.getStatus())
-                                   .date(question.getCreatedAt())
+                                   .questionDate(question.getCreatedAt())
                                    .build();
     }
 }
