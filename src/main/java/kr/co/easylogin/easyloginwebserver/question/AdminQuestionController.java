@@ -5,10 +5,12 @@ import kr.co.easylogin.easyloginwebserver.common.dto.PageDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.PageResponseDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.question.dto.response.AdminQuestionListResponse;
+import kr.co.easylogin.easyloginwebserver.question.dto.response.QuestionInfoResponse;
 import kr.co.easylogin.easyloginwebserver.question.value.QuestionStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,5 +33,10 @@ public class AdminQuestionController {
         List<AdminQuestionListResponse> result = adminQuestionService.getQuestions(pageDto, status);
 
         return PageResponseDto.of(ResponseCode.SUCCESS, result, pageDto);
+    }
+
+    @GetMapping("/{id}")
+    public QuestionInfoResponse getQuestionInfo(@PathVariable(name = "id") Long id) {
+        return adminQuestionService.getQuestionInfo(id);
     }
 }

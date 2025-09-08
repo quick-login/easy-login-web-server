@@ -6,10 +6,14 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import kr.co.easylogin.easyloginwebserver.common.dto.PageDto;
+import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
+import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.common.utils.SecurityUtil;
 import kr.co.easylogin.easyloginwebserver.member.Member;
 import kr.co.easylogin.easyloginwebserver.member.QMember;
+import kr.co.easylogin.easyloginwebserver.question.domain.Question;
 import kr.co.easylogin.easyloginwebserver.question.dto.response.AdminQuestionListResponse;
+import kr.co.easylogin.easyloginwebserver.question.dto.response.QuestionInfoResponse;
 import kr.co.easylogin.easyloginwebserver.question.value.QuestionStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AdminQuestionService {
 
+    private final QuestionRepository questionRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final SecurityUtil securityUtil;
 
@@ -68,5 +73,17 @@ public class AdminQuestionService {
      */
     private BooleanExpression statusEq(QuestionStatus status) {
         return status != null ? question.status.eq(status) : null;
+    }
+
+    /**
+     * 문의 상세 내용 조회
+     */
+    public QuestionInfoResponse getQuestionInfo(Long id) {
+        Member member = securityUtil.getRequestMember();
+        Question question = questionRepository.findById(id)
+                                              .orElseThrow(() -> new BusinessException(ResponseCode.QUESTION_NOT_FOUND));
+
+        log.info("관리자 - 문의 상세 내용 조회 {} : 조회 회원 - {} {}", question.getId(), member.getId(), member.getName());
+        return QuestionInfoResponse.of(question);
     }
 }
