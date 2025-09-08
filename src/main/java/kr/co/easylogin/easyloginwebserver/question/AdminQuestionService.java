@@ -12,6 +12,7 @@ import kr.co.easylogin.easyloginwebserver.common.utils.SecurityUtil;
 import kr.co.easylogin.easyloginwebserver.member.Member;
 import kr.co.easylogin.easyloginwebserver.member.QMember;
 import kr.co.easylogin.easyloginwebserver.question.domain.Question;
+import kr.co.easylogin.easyloginwebserver.question.dto.request.AnswerRequest;
 import kr.co.easylogin.easyloginwebserver.question.dto.response.AdminQuestionListResponse;
 import kr.co.easylogin.easyloginwebserver.question.dto.response.QuestionInfoResponse;
 import kr.co.easylogin.easyloginwebserver.question.value.QuestionStatus;
@@ -85,5 +86,30 @@ public class AdminQuestionService {
 
         log.info("관리자 - 문의 상세 내용 조회 {} : 조회 회원 - {} {}", question.getId(), member.getId(), member.getName());
         return QuestionInfoResponse.of(question);
+    }
+
+    /**
+     * 문의 답변
+     */
+    @Transactional
+    public QuestionInfoResponse answerForQuestion(AnswerRequest request, Long id) {
+        Member member = securityUtil.getRequestMember();
+        Question question = questionRepository.findById(id)
+                                              .orElseThrow(() -> new BusinessException(ResponseCode.QUESTION_NOT_FOUND));
+
+        checkStatus(question);
+        question.createAnswer(request);
+        log.info("{}번 문의에 대한 답변이 완료되었습니다. 답변자 {} - {}", question.getId(), member.getId(), member.getName());
+
+        return QuestionInfoResponse.of(question);
+    }
+
+    /**
+     * 답변 가능한 상태인지 검사
+     */
+    private void checkStatus(Question question) {
+        if (question.getStatus().equals(QuestionStatus.COMPLETED)) {
+            throw new BusinessException(ResponseCode.CHANGE_STATUS_NOT_ALLOWED);
+        }
     }
 }

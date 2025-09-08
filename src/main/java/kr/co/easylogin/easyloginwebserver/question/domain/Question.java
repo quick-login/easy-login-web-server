@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import kr.co.easylogin.easyloginwebserver.common.BaseEntity;
 import kr.co.easylogin.easyloginwebserver.member.Member;
+import kr.co.easylogin.easyloginwebserver.question.dto.request.AnswerRequest;
 import kr.co.easylogin.easyloginwebserver.question.dto.request.InitQuestionRequest;
 import kr.co.easylogin.easyloginwebserver.question.value.QuestionStatus;
 import lombok.Builder;
@@ -59,5 +60,11 @@ public class Question extends BaseEntity {
                        .title(request.getTitle())
                        .content(request.getContent())
                        .build();
+    }
+
+    public void createAnswer(AnswerRequest request) {
+        this.answer = request.getAnswer();
+        this.answeredDate = LocalDateTime.now();
+        this.status = QuestionStatus.COMPLETED;
     }
 }
