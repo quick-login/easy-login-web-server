@@ -40,6 +40,7 @@ public enum ResponseCode {
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "E4008", "상품을 찾을 수 없습니다."),
     DELETED_PRODUCT(HttpStatus.BAD_REQUEST, "E4009", "삭제된 상품입니다."),
     QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "E4010", "문의 내역을 찾을 수 없습니다."),
+    NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "E4011", "공지 내역을 찾을 수 없습니다."),
 
     // 서버 에러
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E5000", "정의되지않은 서버 에러"),

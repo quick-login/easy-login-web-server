@@ -1,5 +1,7 @@
 package kr.co.easylogin.easyloginwebserver.notice;
 
+import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
+import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.common.utils.SecurityUtil;
 import kr.co.easylogin.easyloginwebserver.member.Member;
 import kr.co.easylogin.easyloginwebserver.notice.domain.Notice;
@@ -27,5 +29,16 @@ public class AdminNoticeService {
         Notice notice = Notice.of(request, member);
 
         return noticeRepository.save(notice);
+    }
+
+    /**
+     * 공지사항 수정
+     */
+    @Transactional
+    public Notice modifyNotice(NoticeInitRequest request, Long id) {
+        Notice notice = noticeRepository.findById(id)
+                                        .orElseThrow(() -> new BusinessException(ResponseCode.NOTICE_NOT_FOUND));
+        notice.modify(request);
+        return notice;
     }
 }

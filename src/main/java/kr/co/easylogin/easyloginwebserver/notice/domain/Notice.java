@@ -37,7 +37,7 @@ public class Notice extends BaseEntity {
         this.member = member;
         this.title = title;
         this.content = content;
-        this.fixed = fixed;
+        this.fixed = fixed != null ? fixed : false;
     }
 
     public static Notice of(NoticeInitRequest request, Member member) {
@@ -45,7 +45,16 @@ public class Notice extends BaseEntity {
                      .member(member)
                      .title(request.getTitle())
                      .content(request.getContent())
-                     .fixed(request.getFixed() != null ? request.getFixed() : false)
+                     .fixed(request.getFixed())
                      .build();
+    }
+
+    /**
+     * 공지 수정
+     */
+    public void modify(NoticeInitRequest request) {
+        this.title = request.getTitle();
+        this.content = request.getContent();
+        this.fixed = request.getFixed() != null ? request.getFixed() : false;
     }
 }
