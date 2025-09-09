@@ -7,12 +7,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import kr.co.easylogin.easyloginwebserver.common.BaseEntity;
 import kr.co.easylogin.easyloginwebserver.member.Member;
+import kr.co.easylogin.easyloginwebserver.notice.dto.request.NoticeInitRequest;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Slf4j
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Notice extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -26,4 +31,21 @@ public class Notice extends BaseEntity {
     private String content;
 
     private Boolean fixed;
+
+    @Builder
+    protected Notice(Member member, String title, String content, Boolean fixed) {
+        this.member = member;
+        this.title = title;
+        this.content = content;
+        this.fixed = fixed;
+    }
+
+    public static Notice of(NoticeInitRequest request, Member member) {
+        return Notice.builder()
+                     .member(member)
+                     .title(request.getTitle())
+                     .content(request.getContent())
+                     .fixed(request.getFixed() != null ? request.getFixed() : false)
+                     .build();
+    }
 }
