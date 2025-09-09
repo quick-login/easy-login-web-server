@@ -41,4 +41,15 @@ public class AdminNoticeService {
         notice.modify(request);
         return notice;
     }
+
+    /**
+     * 공지사항 삭제
+     */
+    @Transactional
+    public Notice deleteNotice(Long id) {
+        Notice notice = noticeRepository.findById(id)
+                                        .orElseThrow(() -> new BusinessException(ResponseCode.NOTICE_NOT_FOUND));
+        noticeRepository.delete(notice);
+        return notice;
+    }
 }

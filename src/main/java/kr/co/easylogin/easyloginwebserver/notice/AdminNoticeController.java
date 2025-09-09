@@ -5,6 +5,7 @@ import kr.co.easylogin.easyloginwebserver.notice.domain.Notice;
 import kr.co.easylogin.easyloginwebserver.notice.dto.request.NoticeInitRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,5 +33,11 @@ public class AdminNoticeController {
 
         Notice notice = adminNoticeService.modifyNotice(request, id);
         log.info("{}번 공지가 수정되었습니다. 수정자 : {} {}", notice.getId(), notice.getMember().getId(), notice.getMember().getName());
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteNotice(@PathVariable(name = "id") Long id) {
+        Notice notice = adminNoticeService.deleteNotice(id);
+        log.info("{}번 공지가 삭제되었습니다. 수정자 : {} {}", notice.getId(), notice.getMember().getId(), notice.getMember().getName());
     }
 }
