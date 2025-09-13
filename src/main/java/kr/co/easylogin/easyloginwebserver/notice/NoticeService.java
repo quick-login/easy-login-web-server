@@ -2,7 +2,10 @@ package kr.co.easylogin.easyloginwebserver.notice;
 
 import java.util.List;
 import kr.co.easylogin.easyloginwebserver.common.dto.PageDto;
+import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
+import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.notice.domain.Notice;
+import kr.co.easylogin.easyloginwebserver.notice.dto.response.NoticeDetailsResponse;
 import kr.co.easylogin.easyloginwebserver.notice.dto.response.NoticeResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,5 +41,12 @@ public class NoticeService {
         return notices.stream()
                       .map(NoticeResponse::of)
                       .toList();
+    }
+
+    public NoticeDetailsResponse getNoticeById(Long id) {
+        Notice notice = noticeRepository.findByIdWithMember(id)
+                                        .orElseThrow(() -> new BusinessException(ResponseCode.NOTICE_NOT_FOUND));
+
+        return NoticeDetailsResponse.of(notice);
     }
 }
