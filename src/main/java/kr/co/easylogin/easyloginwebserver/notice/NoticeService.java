@@ -24,6 +24,9 @@ public class NoticeService {
 
     private final NoticeRepository noticeRepository;
 
+    /**
+     * 고정 공지(fixed 공지) 조회
+     */
     public List<NoticeResponse> getFixedNotices() {
         List<Notice> notices = noticeRepository.findByFixedOrderByCreatedAtDesc(Boolean.TRUE);
         return notices.stream()
@@ -31,6 +34,9 @@ public class NoticeService {
                       .toList();
     }
 
+    /**
+     * 공지 리스트 조회
+     */
     public List<NoticeResponse> getNotices(PageDto pageDto) {
         PageRequest pageRequest = PageRequest.of(pageDto.getCurrentPage() - 1, pageDto.getPageSize(), Sort.by(Order.desc("createdAt")));
 
@@ -43,6 +49,9 @@ public class NoticeService {
                       .toList();
     }
 
+    /**
+     * 공지 내용 상세 조회
+     */
     public NoticeDetailsResponse getNoticeById(Long id) {
         Notice notice = noticeRepository.findByIdWithMember(id)
                                         .orElseThrow(() -> new BusinessException(ResponseCode.NOTICE_NOT_FOUND));
