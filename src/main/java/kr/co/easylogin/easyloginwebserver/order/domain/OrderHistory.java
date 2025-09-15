@@ -6,7 +6,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import kr.co.easylogin.easyloginwebserver.common.BaseEntity;
-import kr.co.easylogin.easyloginwebserver.product.domain.Product;
+import kr.co.easylogin.easyloginwebserver.member.Member;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,16 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 public class OrderHistory extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_history_id")
-    private OrderHistory orderHistory;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
-
-    @Column(nullable = false)
-    private Long orderQuantity;
+    @Column(nullable = false, length = 100)
+    private String orderCode;
 
     @Column(nullable = false)
-    private Long price;
+    private Long totalPrice;
+
 }
