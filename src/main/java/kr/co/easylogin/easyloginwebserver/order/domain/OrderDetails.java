@@ -7,6 +7,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import kr.co.easylogin.easyloginwebserver.common.BaseEntity;
 import kr.co.easylogin.easyloginwebserver.product.domain.Product;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,4 +29,15 @@ public class OrderDetails extends BaseEntity {
 
     @Column(nullable = false)
     private Long price;
+
+    protected OrderDetails() {
+    }
+
+    @Builder
+    public OrderDetails(OrderHistory orderHistory, Product product, Long orderQuantity, Long price) {
+        this.orderHistory = orderHistory;
+        this.product = product;
+        this.orderQuantity = orderQuantity;
+        this.price = price;
+    }
 }
