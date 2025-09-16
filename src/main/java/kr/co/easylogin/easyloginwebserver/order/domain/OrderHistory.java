@@ -5,8 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import kr.co.easylogin.easyloginwebserver.common.BaseEntity;
 import kr.co.easylogin.easyloginwebserver.member.Member;
@@ -28,6 +31,9 @@ public class OrderHistory extends BaseEntity {
 
     @Column(nullable = false)
     private Long totalPrice;
+
+    @OneToMany(mappedBy = "orderHistory")
+    private List<OrderDetails> orderDetails = new ArrayList<>();
 
     protected OrderHistory() {
         LocalDateTime now = LocalDateTime.now();
