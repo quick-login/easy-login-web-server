@@ -2,6 +2,7 @@ package kr.co.easylogin.easyloginwebserver.order;
 
 import java.util.ArrayList;
 import java.util.List;
+import kr.co.easylogin.easyloginwebserver.common.dto.PageDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.common.utils.SecurityUtil;
@@ -15,6 +16,10 @@ import kr.co.easylogin.easyloginwebserver.product.domain.Product;
 import kr.co.easylogin.easyloginwebserver.product.value.ProductStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -117,5 +122,24 @@ public class OrderService {
                 }
             }
         }
+    }
+
+    /**
+     * 주문 목록 조회
+     */
+    public List<OrderResultResponse> getOrders(PageDto pageDto) {
+        Member member = securityUtil.getRequestMember();
+        PageRequest pageRequest = PageRequest.of(pageDto.getCurrentPage() - 1, pageDto.getPageSize(), Sort.by(Order.desc("createdAt")));
+
+        Page<OrderHistory> orderHistories = orderHistoryRepository.findByMemberId(member.getId(), pageRequest);
+
+        pageDto.updateTotalPagesAndElements(orderHistories);
+        pageDto.checkCurrentPage();
+
+        log.info("주문 목록 조회 - 조회 회원 : {} - {}", member.getId(), member.getName());
+
+        return orderHistories.stream()
+                             .map(OrderResultResponse::of)
+                             .toList();
     }
 }
