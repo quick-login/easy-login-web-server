@@ -28,16 +28,20 @@ public class OrderDetails extends BaseEntity {
     private Long orderQuantity;
 
     @Column(nullable = false)
+    private Long discountRate;
+
+    @Column(nullable = false)
     private Long price;
 
     protected OrderDetails() {
     }
 
     @Builder
-    public OrderDetails(OrderHistory orderHistory, Product product, Long orderQuantity, Long price) {
+    public OrderDetails(OrderHistory orderHistory, Product product, Long orderQuantity, Long discountRate, Long price) {
         this.orderHistory = orderHistory;
         this.product = product;
         this.orderQuantity = orderQuantity;
+        this.discountRate = discountRate;
         this.price = price;
     }
 }

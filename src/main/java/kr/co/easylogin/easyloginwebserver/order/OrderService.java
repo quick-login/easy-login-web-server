@@ -58,16 +58,21 @@ public class OrderService {
 
             // 판매중인 상품인지 검증
             checkProductSailing(product);
+            // 할인가격 계산
+            Long discountRate = product.getDiscountRate();
+            // 계산식 = 원가 * (100 - 할인율) / 100
+            long price = (product.getPrice() * request.getOrderQuantity()) * (100 - discountRate) / 100;
 
             OrderDetails orderDetail = OrderDetails.builder()
                                                    .orderHistory(orderHistory)
                                                    .product(product)
                                                    .orderQuantity(request.getOrderQuantity())
-                                                   .price(product.getPrice() * request.getOrderQuantity())
+                                                   .price(price)
+                                                   .discountRate(discountRate)
                                                    .build();
 
             orderDetails.add(orderDetail);
-            totalPrice += product.getPrice() * request.getOrderQuantity();
+            totalPrice += price;
         }
         orderHistory.updateTotalPrice(totalPrice);
 
