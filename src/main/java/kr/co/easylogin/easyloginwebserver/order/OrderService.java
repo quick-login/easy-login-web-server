@@ -10,6 +10,7 @@ import kr.co.easylogin.easyloginwebserver.member.Member;
 import kr.co.easylogin.easyloginwebserver.order.domain.OrderDetails;
 import kr.co.easylogin.easyloginwebserver.order.domain.OrderHistory;
 import kr.co.easylogin.easyloginwebserver.order.dto.request.CreateOrderRequest;
+import kr.co.easylogin.easyloginwebserver.order.dto.response.OrderDetailsResultResponse;
 import kr.co.easylogin.easyloginwebserver.order.dto.response.OrderResultResponse;
 import kr.co.easylogin.easyloginwebserver.product.ProductRepository;
 import kr.co.easylogin.easyloginwebserver.product.domain.Product;
@@ -31,6 +32,7 @@ public class OrderService {
 
     private final OrderDetailsRepository orderDetailsRepository;
     private final OrderHistoryRepository orderHistoryRepository;
+    private final OrderHistoryQueryDslRepository orderHistoryQueryDslRepository;
     private final ProductRepository productRepository;
     private final SecurityUtil securityUtil;
 
@@ -146,5 +148,32 @@ public class OrderService {
         return orderHistories.stream()
                              .map(OrderResultResponse::of)
                              .toList();
+    }
+
+    /**
+     * 주문 내역 상세 조회
+     */
+    public OrderDetailsResultResponse getOrder(String orderCode) {
+        Member member = securityUtil.getRequestMember();
+        OrderHistory orderHistory = orderHistoryQueryDslRepository.findByOrderCodeWithOrderDetailsAndProduct(orderCode);
+
+        if (orderHistory == null) {
+            throw new BusinessException(ResponseCode.ORDER_HISTORY_NOT_FOUND);
+        }
+
+        checkPermission(orderHistory, member);
+
+        log.info("{} 주문상세 내역 조회 : 조회 회원 {} - {} ", orderHistory.getOrderCode(), member.getId(), member.getName());
+        return OrderDetailsResultResponse.of(orderHistory);
+    }
+
+    /**
+     * 주문 회원 검사
+     */
+    private void checkPermission(OrderHistory orderHistory, Member member) {
+        if (!orderHistory.getMember().equals(member)) {
+            log.error("조회권한이 없는 주문 내역 조회 : {}, 조회시도 회원 : {}", orderHistory.getId(), member.getId());
+            throw new BusinessException(ResponseCode.API_FORBIDDEN);
+        }
     }
 }

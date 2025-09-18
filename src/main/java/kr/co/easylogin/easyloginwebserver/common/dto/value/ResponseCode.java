@@ -44,6 +44,7 @@ public enum ResponseCode {
     NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "E4011", "공지 내역을 찾을 수 없습니다."),
     EMPTY_ORDER_LIST(HttpStatus.BAD_REQUEST, "E4012", "주문 목록은 비어있을 수 없습니다."),
     NOT_ON_SALE(HttpStatus.BAD_REQUEST, "E4013", "판매중인 상품이 아닙니다."),
+    ORDER_HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "E4011", "주문 내역을 찾을 수 없습니다."),
 
     // 서버 에러
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E5000", "정의되지않은 서버 에러"),
