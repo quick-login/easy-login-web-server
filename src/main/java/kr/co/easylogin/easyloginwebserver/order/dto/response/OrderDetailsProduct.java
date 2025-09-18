@@ -10,6 +10,7 @@ public record OrderDetailsProduct(
     String productName,
     ProductType productType,
     String productTypeDescription,
+    Long value,
     Long orderQuantity,
     Long price,
     Long discountRate
@@ -21,6 +22,7 @@ public record OrderDetailsProduct(
                                   .productName(product.getName())
                                   .productType(product.getProductType())
                                   .productTypeDescription(product.getProductType().getDescription())
+                                  .value(product.getValue())
                                   .orderQuantity(orderDetails.getOrderQuantity())
                                   .price(orderDetails.getPrice())
                                   .discountRate(orderDetails.getDiscountRate())
