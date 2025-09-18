@@ -84,6 +84,18 @@ public class Member extends BaseEntity {
         this.cash += cash;
     }
 
+    public void decreaseCash(Long cash) {
+        this.cash -= cash;
+    }
+
+    public void increaseRemainCount(Long remainCount) {
+        this.remainCount += remainCount;
+    }
+
+    public void increaseMaxKakaoAppCount(Long maxKakaoAppCount) {
+        this.maxKakaoAppCount += maxKakaoAppCount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {

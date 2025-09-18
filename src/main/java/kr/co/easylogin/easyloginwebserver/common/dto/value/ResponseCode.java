@@ -21,6 +21,7 @@ public enum ResponseCode {
     EMAIL_VERIFIED_EXPIRED(HttpStatus.BAD_REQUEST, "U1006", "이메일 인증 시간이 만료되었습니다."),
     EMAIL_UNVERIFIED_ERROR(HttpStatus.BAD_REQUEST, "U1007", "인증되지 않은 이메일입니다."),
     INVALID_LOGIN_INFO(HttpStatus.UNAUTHORIZED, "U1008", "로그인 인증정보가 일치하지 않습니다."),
+    INSUFFICIENT_CASH(HttpStatus.BAD_REQUEST, "U1009", "보유 캐시가 충분하지 않습니다."),
 
     // 카카오 앱 에러
     APP_REGISTRATION_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "K2000", "등록 가능한 앱 가능 수를 초과하였습니다."),
@@ -41,6 +42,9 @@ public enum ResponseCode {
     DELETED_PRODUCT(HttpStatus.BAD_REQUEST, "E4009", "삭제된 상품입니다."),
     QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "E4010", "문의 내역을 찾을 수 없습니다."),
     NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "E4011", "공지 내역을 찾을 수 없습니다."),
+    EMPTY_ORDER_LIST(HttpStatus.BAD_REQUEST, "E4012", "주문 목록은 비어있을 수 없습니다."),
+    NOT_ON_SALE(HttpStatus.BAD_REQUEST, "E4013", "판매중인 상품이 아닙니다."),
+    ORDER_HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "E4011", "주문 내역을 찾을 수 없습니다."),
 
     // 서버 에러
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E5000", "정의되지않은 서버 에러"),

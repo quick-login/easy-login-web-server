@@ -23,6 +23,7 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Long price;
 
+    @Column(nullable = false)
     private Long discountRate;
 
     @Enumerated(EnumType.STRING)
