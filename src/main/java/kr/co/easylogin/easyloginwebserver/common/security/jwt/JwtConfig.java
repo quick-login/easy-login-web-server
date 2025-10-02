@@ -19,6 +19,18 @@ public class JwtConfig {
     @Value("${jwt.secret.key}")
     private String jwtSecretKey;
 
+    public static void main(String[] args) {
+        String original = "dlszheldgkfwhsskrlsanswkdufaksemfdjtjtlfgodtlzltpdysjanWkfqdmausdksehlqslekqksemtlrlfrp";
+        String encoded = Base64.getEncoder().encodeToString(original.getBytes());
+        System.out.println(encoded); // Base64로 인코딩된 문자열 출력
+
+        String base64String =
+            "ZGxzemhlbGRna2Z3aHNza3Jsc2Fuc3drZHVmYWtzZW1mZGp0anRsZmdvZHRsemx0cGR5c2phbldrZnFkbWF1c2Rrc2VobHFzbGVrcWtzZW10bHJsZnJw";
+        byte[] decodedBytes = Base64.getDecoder().decode(base64String);
+        String decoded = new String(decodedBytes);
+        System.out.println(decoded);
+    }
+
     @Bean
     public SecretKey secretKey() {
         byte[] decoded = Base64.getDecoder().decode(jwtSecretKey);
