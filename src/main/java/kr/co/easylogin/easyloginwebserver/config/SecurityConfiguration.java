@@ -43,7 +43,8 @@ public class SecurityConfiguration {
     public static final String REFRESH_URL = "/api/v1/member/refresh";
 
     private static final List<String> ALLOWED_ORIGINS = List.of(
-        "http://localhost:3000"
+//        "http://localhost:3000",
+        "*"
                                                                );
 
     private static final List<String> ALLOWED_METHODS = List.of(
@@ -136,7 +137,8 @@ public class SecurityConfiguration {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowedOrigins(ALLOWED_ORIGINS);
             config.setAllowedMethods(ALLOWED_METHODS);
-            config.setAllowedHeaders(List.of("")); // preflight 요청에 대한 응답 헤더 허용
+            config.setAllowedHeaders(List.of("*")); // 모든 요청 헤더 허용
+//            config.setAllowedHeaders(List.of("")); // preflight 요청에 대한 응답 헤더 허용
             config.setExposedHeaders(List.of(JwtConfig.REFRESH_TOKEN_HEADER)); // 브라우저가 접근할 수 있는 응답 헤더 허용
             return config;
         });
