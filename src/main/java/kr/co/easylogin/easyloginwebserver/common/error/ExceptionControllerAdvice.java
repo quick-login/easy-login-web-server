@@ -1,10 +1,13 @@
 package kr.co.easylogin.easyloginwebserver.common.error;
 
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import kr.co.easylogin.easyloginwebserver.common.dto.ResponseDto;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
+import kr.co.easylogin.easyloginwebserver.common.response.InvalidInputResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -30,6 +33,25 @@ public class ExceptionControllerAdvice {
         response.setStatus(ResponseCode.INVALID_INPUT.getStatus().value());
         log.error("지원하지 않는 URI 요청 : {}", exception.getMessage());
         return ResponseDto.of(ResponseCode.INVALID_INPUT);
+    }
+
+    /**
+     * Validation 라이브러리로 RequestBody 입력 파라미터 검증 오류시
+     */
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseDto<List<InvalidInputResponse>> handleBusinessException(MethodArgumentNotValidException exception) {
+        response.setStatus(ResponseCode.INVALID_INPUT.getStatus().value());
+        List<InvalidInputResponse> invalidInputResponses = changeFieldErrorToDto(exception);
+        log.error(invalidInputResponses.toString());
+        return ResponseDto.of(ResponseCode.INVALID_INPUT, invalidInputResponses);
+    }
+
+    private List<InvalidInputResponse> changeFieldErrorToDto(MethodArgumentNotValidException exception) {
+        return exception.getBindingResult()
+                        .getFieldErrors()
+                        .stream()
+                        .map(InvalidInputResponse::of)
+                        .toList();
     }
 
     /**
