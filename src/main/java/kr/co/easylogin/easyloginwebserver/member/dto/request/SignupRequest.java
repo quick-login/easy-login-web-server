@@ -1,5 +1,6 @@
 package kr.co.easylogin.easyloginwebserver.member.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -7,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
+@JsonFilter("sensitiveFilter")
 public class SignupRequest {
 
     @NotBlank(message = "이메일은 비어있을 수 없습니다.")

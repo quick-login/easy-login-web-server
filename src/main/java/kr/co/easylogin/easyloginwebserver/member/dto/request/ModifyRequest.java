@@ -1,11 +1,13 @@
 package kr.co.easylogin.easyloginwebserver.member.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
+@JsonFilter("sensitiveFilter")
 public class ModifyRequest {
 
     @NotBlank(message = "이름은 비어있을 수 없습니다.")
@@ -23,5 +25,5 @@ public class ModifyRequest {
     @NotBlank(message = "비밀번호 확인은 비어있을 수 없습니다.")
     @Size(min = 6, max = 30, message = "비밀번호 확인은 6자 이상, 30자 이하여야 합니다.")
     private String passwordCheck;
-    
+
 }
