@@ -37,6 +37,9 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.12.6'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
+    //spring AOP
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
