@@ -8,6 +8,7 @@ import kr.co.easylogin.easyloginwebserver.common.security.filter.ExceptionFilter
 import kr.co.easylogin.easyloginwebserver.common.security.filter.LoginFilter;
 import kr.co.easylogin.easyloginwebserver.common.security.filter.LogoutFilter;
 import kr.co.easylogin.easyloginwebserver.common.security.filter.RefreshFilter;
+import kr.co.easylogin.easyloginwebserver.common.security.filter.SecurityLoggingFilter;
 import kr.co.easylogin.easyloginwebserver.common.security.handler.RefreshSuccessHandler;
 import kr.co.easylogin.easyloginwebserver.common.security.jwt.JwtConfig;
 import kr.co.easylogin.easyloginwebserver.common.security.provider.AccessTokenAuthenticationProvider;
@@ -100,6 +101,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(
         HttpSecurity http,
+        SecurityLoggingFilter securityLoggingFilter,
         LoginFilter loginFilter,
         LogoutFilter logoutFilter,
         AuthFilter authFilter,
@@ -122,6 +124,7 @@ public class SecurityConfiguration {
         http.addFilterBefore(authFilter, LogoutFilter.class);
         http.addFilterBefore(refreshFilter, AuthFilter.class);
         http.addFilterBefore(exceptionFilter, RefreshFilter.class);
+        http.addFilterBefore(securityLoggingFilter, ExceptionFilter.class);
 
         // 요청 URL 접근 설정
         settingRequestAuthorization(http);
