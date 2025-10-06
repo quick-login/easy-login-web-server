@@ -9,7 +9,6 @@ import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.common.utils.RedisUtil;
 import kr.co.easylogin.easyloginwebserver.common.utils.SecurityUtil;
 import kr.co.easylogin.easyloginwebserver.mail.MailSenderService;
-import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailDuplicateRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailValidationRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailVerificationRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.ModifyRequest;
@@ -39,9 +38,7 @@ public class MemberService {
      */
     @Transactional
     public void signup(SignupRequest signupRequest) {
-        if (memberRepository.findByEmail(signupRequest.getEmail()).isPresent()) {
-            throw new BusinessException(ResponseCode.DUPLICATE_EMAIL);
-        }
+        emailDuplicate(signupRequest.getEmail());
 
         String encryptPassword = passwordSameCheck(signupRequest.getPassword(), signupRequest.getPasswordCheck()); // 비밀번호 입력 검증
         emailVerifiedCheck(signupRequest); // 이메일 인증 검사
@@ -75,17 +72,18 @@ public class MemberService {
     /**
      * 이메일 중복 회원 검증
      */
-    public boolean emailDuplicate(EmailDuplicateRequest request) {
-        if (memberRepository.findByEmail(request.getEmail()).isPresent()) {
+    private void emailDuplicate(String email) {
+        if (memberRepository.findByEmail(email).isPresent()) {
             throw new BusinessException(ResponseCode.DUPLICATE_EMAIL);
         }
-        return true;
     }
 
     /**
      * 메일 인증번호 생성 및 전송
      */
     public void sendEmailVerification(EmailVerificationRequest request) {
+        emailDuplicate(request.getEmail());
+
         String code = createCode();
         redisUtil.set(EMAIL_VERIFICATION_PREFIX + request.getEmail(), code, Duration.ofMinutes(3));
 

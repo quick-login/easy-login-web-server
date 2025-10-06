@@ -1,7 +1,6 @@
 package kr.co.easylogin.easyloginwebserver.member;
 
 import jakarta.validation.Valid;
-import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailDuplicateRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailValidationRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.EmailVerificationRequest;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.ModifyRequest;
@@ -27,11 +26,6 @@ public class MemberController {
     @PostMapping("/signup")
     public void signup(@Valid @RequestBody SignupRequest signupRequest) {
         memberService.signup(signupRequest);
-    }
-
-    @PostMapping("/duplicate")
-    public boolean duplicate(@Valid @RequestBody EmailDuplicateRequest request) {
-        return memberService.emailDuplicate(request);
     }
 
     @PostMapping("/email-verification")
