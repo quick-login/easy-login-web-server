@@ -156,7 +156,7 @@ public class SecurityConfiguration {
                     // 어드민
                     .requestMatchers("/admin/**").hasAnyRole("MANAGER", "ADMIN")
                     // 인증
-                    .requestMatchers(SIGNUP_URL, REFRESH_URL, "/api/v1/member/duplicate", "/api/v1/member/email-verification",
+                    .requestMatchers(SIGNUP_URL, REFRESH_URL, "/api/v1/member/email-verification",
                                      "/api/v1/member/email-validation").permitAll()
                     // 그 외
                     .anyRequest().authenticated()
