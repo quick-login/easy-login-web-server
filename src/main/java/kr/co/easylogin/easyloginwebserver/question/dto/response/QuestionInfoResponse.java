@@ -8,6 +8,7 @@ import lombok.Builder;
 @Builder
 public record QuestionInfoResponse(
     Long questionId,
+    String name,
     String title,
     String content,
     String answer,
@@ -19,6 +20,7 @@ public record QuestionInfoResponse(
     public static QuestionInfoResponse of(Question question) {
         return QuestionInfoResponse.builder()
                                    .questionId(question.getId())
+                                   .name(question.getMember().getName())
                                    .title(question.getTitle())
                                    .content(question.getContent())
                                    .answer(question.getAnswer())

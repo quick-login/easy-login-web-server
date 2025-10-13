@@ -9,7 +9,6 @@ import lombok.Builder;
 public record QuestionListResponse(
     Long questionId,
     String title,
-    String content,
     QuestionStatus status,
     String questionDate
 ) {
@@ -18,7 +17,6 @@ public record QuestionListResponse(
         return QuestionListResponse.builder()
                                    .questionId(question.getId())
                                    .title(question.getTitle())
-                                   .content(question.getContent())
                                    .status(question.getStatus())
                                    .questionDate(question.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                                    .build();

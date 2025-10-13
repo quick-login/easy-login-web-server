@@ -10,7 +10,6 @@ public record AdminQuestionListResponse(
     Long questionId,
     String name,
     String title,
-    String content,
     QuestionStatus status,
     String questionDate
 ) {
@@ -20,7 +19,6 @@ public record AdminQuestionListResponse(
                                         .questionId(question.getId())
                                         .name(question.getMember().getName())
                                         .title(question.getTitle())
-                                        .content(question.getContent())
                                         .status(question.getStatus())
                                         .questionDate(question.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                                         .build();
