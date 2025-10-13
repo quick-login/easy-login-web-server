@@ -81,7 +81,7 @@ public class AdminQuestionService {
      */
     public QuestionInfoResponse getQuestionInfo(Long id) {
         Member member = securityUtil.getRequestMember();
-        Question question = questionRepository.findById(id)
+        Question question = questionRepository.findByIdWithMemberId(id)
                                               .orElseThrow(() -> new BusinessException(ResponseCode.QUESTION_NOT_FOUND));
 
         log.info("관리자 - 문의 상세 내용 조회 {} : 조회 회원 - {} {}", question.getId(), member.getId(), member.getName());
