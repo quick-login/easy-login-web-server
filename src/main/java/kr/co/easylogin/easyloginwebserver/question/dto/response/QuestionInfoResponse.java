@@ -1,6 +1,6 @@
 package kr.co.easylogin.easyloginwebserver.question.dto.response;
 
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import kr.co.easylogin.easyloginwebserver.question.domain.Question;
 import kr.co.easylogin.easyloginwebserver.question.value.QuestionStatus;
 import lombok.Builder;
@@ -12,8 +12,8 @@ public record QuestionInfoResponse(
     String content,
     String answer,
     QuestionStatus status,
-    LocalDateTime questionDate,
-    LocalDateTime answeredDate
+    String questionDate,
+    String answeredDate
 ) {
 
     public static QuestionInfoResponse of(Question question) {
@@ -23,8 +23,10 @@ public record QuestionInfoResponse(
                                    .content(question.getContent())
                                    .answer(question.getAnswer())
                                    .status(question.getStatus())
-                                   .questionDate(question.getCreatedAt())
-                                   .answeredDate(question.getAnsweredDate())
+                                   .questionDate(question.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                                   .answeredDate(question.getAnsweredDate() != null
+                                                 ? question.getAnsweredDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                                                 : null)
                                    .build();
     }
 }
