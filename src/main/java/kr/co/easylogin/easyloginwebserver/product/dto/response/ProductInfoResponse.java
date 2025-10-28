@@ -12,7 +12,7 @@ public record ProductInfoResponse(Long product_id, String name, Long price, Long
                                   .name(product.getName())
                                   .price(product.getPrice())
                                   .discountRate(product.getDiscountRate())
-                                  .finalPrice(product.getPrice() * (1 - product.getDiscountRate() / 100))
+                                  .finalPrice(product.getPrice() * (100 - product.getDiscountRate()) / 100)
                                   .build();
     }
 }
