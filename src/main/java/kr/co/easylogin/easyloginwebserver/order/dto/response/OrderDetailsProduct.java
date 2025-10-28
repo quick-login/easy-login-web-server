@@ -13,6 +13,7 @@ public record OrderDetailsProduct(
     Long value,
     Long orderQuantity,
     Long price,
+    Long finalPrice,
     Long discountRate
 ) {
 
@@ -24,7 +25,8 @@ public record OrderDetailsProduct(
                                   .productTypeDescription(product.getProductType().getDescription())
                                   .value(product.getValue())
                                   .orderQuantity(orderDetails.getOrderQuantity())
-                                  .price(orderDetails.getPrice())
+                                  .price(product.getPrice() * orderDetails.getOrderQuantity())
+                                  .finalPrice(orderDetails.getPrice())
                                   .discountRate(orderDetails.getDiscountRate())
                                   .build();
     }
