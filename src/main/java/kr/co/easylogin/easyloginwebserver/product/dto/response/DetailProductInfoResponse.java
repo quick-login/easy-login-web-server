@@ -7,11 +7,12 @@ import lombok.Builder;
 
 @Builder
 public record DetailProductInfoResponse(Long productId, Long price, Long discountRate, ProductType type, Long value, String typeDescription,
-                                        ProductStatus status, Long finalPrice) {
+                                        ProductStatus status, Long finalPrice, String name) {
 
     public static DetailProductInfoResponse of(Product product) {
         return DetailProductInfoResponse.builder()
                                         .productId(product.getId())
+                                        .name(product.getName())
                                         .price(product.getPrice())
                                         .discountRate(product.getDiscountRate())
                                         .type(product.getProductType())
