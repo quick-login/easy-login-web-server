@@ -160,7 +160,7 @@ public class SecurityConfiguration {
                     .requestMatchers("/admin/**").hasAnyRole("MANAGER", "ADMIN")
                     // 인증
                     .requestMatchers(SIGNUP_URL, REFRESH_URL, "/api/v1/member/email-verification",
-                                     "/api/v1/member/email-validation").permitAll()
+                                     "/api/v1/member/email-validation", "/api/v1/notice/**").permitAll()
                     // 그 외
                     .anyRequest().authenticated()
                                   );
