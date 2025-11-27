@@ -32,14 +32,15 @@ public class AdminProductService {
      * 상품 등록
      */
     @Transactional
-    public void initProduct(InitProductRequest request) {
+    public DetailProductInfoResponse initProduct(InitProductRequest request) {
         Product product = Product.of(request);
         checkDiscountRate(product);
         Member member = securityUtil.getRequestMember();
 
         log.info("상품 등록 : {}, {}원, 할인율 {}% - 등록회원 : {}", product.getName(), product.getPrice(), product.getDiscountRate(),
                  member.getId());
-        productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
+        return DetailProductInfoResponse.of(savedProduct);
     }
 
     /**

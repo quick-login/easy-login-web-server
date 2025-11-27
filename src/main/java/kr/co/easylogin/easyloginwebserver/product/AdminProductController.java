@@ -29,8 +29,8 @@ public class AdminProductController {
     private final AdminProductService adminProductService;
 
     @PostMapping
-    public void initProduct(@Valid @RequestBody InitProductRequest request) {
-        adminProductService.initProduct(request);
+    public DetailProductInfoResponse initProduct(@Valid @RequestBody InitProductRequest request) {
+        return adminProductService.initProduct(request);
     }
 
     @GetMapping("/list")
