@@ -56,7 +56,7 @@ public class AdminProductService {
      * 관리자 화면 상품 리스트 조회
      */
     public List<DetailProductInfoResponse> getProductList(PageDto pageDto) {
-        PageRequest pageRequest = PageRequest.of(pageDto.getCurrentPage() - 1, pageDto.getPageSize(), Sort.by(Order.asc("createdAt")));
+        PageRequest pageRequest = PageRequest.of(pageDto.getCurrentPage() - 1, pageDto.getPageSize(), Sort.by(Order.desc("createdAt")));
         Page<Product> products = productRepository.findByStatusNot(ProductStatus.DELETED, pageRequest);
 
         pageDto.updateTotalPagesAndElements(products);
