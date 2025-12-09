@@ -44,8 +44,8 @@ public class SecurityConfiguration {
     public static final String REFRESH_URL = "/api/v1/member/refresh";
 
     private static final List<String> ALLOWED_ORIGINS = List.of(
-//        "http://localhost:3000",
-        "*"
+        "http://localhost:3000", "https://easy-login.co.kr"
+//        "*"
                                                                );
 
     private static final List<String> ALLOWED_METHODS = List.of(
