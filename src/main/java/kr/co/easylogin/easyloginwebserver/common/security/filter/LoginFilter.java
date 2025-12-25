@@ -71,28 +71,37 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String ip = request.getHeader("X-Forwarded-For");
         log.info("X-Forwarded-For : {}", ip);
 
-        if (ip == null) {
-            ip = request.getHeader("Proxy-Client-IP");
-            log.info("Proxy-Client-IP : {}", ip);
-        }
-        if (ip == null) {
-            ip = request.getHeader("WL-Proxy-Client-IP");
-            log.info("WL-Proxy-Client-IP : {}", ip);
-        }
-        if (ip == null) {
-            ip = request.getHeader("HTTP_CLIENT_IP");
-            log.info("HTTP_CLIENT_IP : {}", ip);
-        }
-        if (ip == null) {
-            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-            log.info("HTTP_X_FORWARDED_FOR : {}", ip);
-        }
-        if (ip == null) {
-            // -Djava.net.preferIPv4Stack=true VM 옵션에 추가해야 IPv4 형태로 뽑아옴
-            ip = request.getRemoteAddr();
-            log.info("request.getRemoteAddr() : {}", ip);
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            // 여러 IP가 있을 때 첫 번째(클라이언트 IP)만 추출
+            ip = ip.split(",")[0].trim();
+            log.info("Extracted Client IP from X-Forwarded-For: {}", ip);
+            return ip;
         }
 
+        // 기존 다른 헤더 체크 (필요시 유지)
+        ip = request.getHeader("Proxy-Client-IP");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
+
+        ip = request.getHeader("WL-Proxy-Client-IP");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
+
+        ip = request.getHeader("HTTP_CLIENT_IP");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
+
+        ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            ip = ip.split(",")[0].trim();
+            return ip;
+        }
+
+        ip = request.getRemoteAddr();
+        log.info("Fallback to getRemoteAddr(): {}", ip);
         return ip;
     }
 
