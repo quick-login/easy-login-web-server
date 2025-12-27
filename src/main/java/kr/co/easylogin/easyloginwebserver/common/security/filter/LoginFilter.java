@@ -69,8 +69,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private String getClientIP(HttpServletRequest request) {
 
-        // request.getHeader("X-Forwarded-For") 헤더 로깅해보기
-        log.info("request.getHeader(\"X-Forwarded-For\") : {}", request.getHeader("X-Forwarded-For"));
+        // === 전체 헤더 로그 출력 (디버깅용) ===
+        log.info("=== All Request Headers ===");
+        request.getHeaderNames().asIterator().forEachRemaining(headerName -> {
+            String headerValue = request.getHeader(headerName);
+            log.info("{}: {}", headerName, headerValue);
+        });
+        log.info("=== End of Headers ===");
 
         // 클라우드 플레어 헤더 우선 체크
         String ip = request.getHeader("CF-Connecting-IP");
