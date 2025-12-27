@@ -68,7 +68,16 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     private String getClientIP(HttpServletRequest request) {
-        String ip = request.getHeader("X-Forwarded-For");
+
+        // X-Real-IP 헤더 우선 체크
+        String ip = request.getHeader("X-Real-IP");
+        log.info("X-Real-IP: {}", ip);
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            log.info("Extracted Client IP from X-Real-IP: {}", ip);
+            return ip;
+        }
+
+        ip = request.getHeader("X-Forwarded-For");
         log.info("X-Forwarded-For : {}", ip);
 
         if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
