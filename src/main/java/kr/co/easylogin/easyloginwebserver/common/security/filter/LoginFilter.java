@@ -69,8 +69,16 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private String getClientIP(HttpServletRequest request) {
 
+        // 클라우드 플레어 헤더 우선 체크
+        String ip = request.getHeader("CF-Connecting-IP");
+        log.info("CF-Connecting-IP: {}", ip);
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            log.info("Extracted Client IP from CF-Connecting-IP: {}", ip);
+            return ip;
+        }
+
         // X-Real-IP 헤더 우선 체크
-        String ip = request.getHeader("X-Real-IP");
+        ip = request.getHeader("X-Real-IP");
         log.info("X-Real-IP: {}", ip);
         if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
             log.info("Extracted Client IP from X-Real-IP: {}", ip);
