@@ -11,6 +11,7 @@ import kr.co.easylogin.easyloginwebserver.auth.value.LoginStatus;
 import kr.co.easylogin.easyloginwebserver.common.dto.value.ResponseCode;
 import kr.co.easylogin.easyloginwebserver.common.error.BusinessException;
 import kr.co.easylogin.easyloginwebserver.common.security.userDetils.UserDetailsImpl;
+import kr.co.easylogin.easyloginwebserver.common.utils.ClientUtil;
 import kr.co.easylogin.easyloginwebserver.config.SecurityConfiguration;
 import kr.co.easylogin.easyloginwebserver.member.Member;
 import kr.co.easylogin.easyloginwebserver.member.dto.request.LoginRequest;
@@ -50,13 +51,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
                 Member member = principal.member();
 
-                LoginHistory loginHistory = new LoginHistory(member, getClientIP(request), LoginStatus.SUCCESS);
+                LoginHistory loginHistory = new LoginHistory(member, ClientUtil.getClientIP(request), LoginStatus.SUCCESS);
                 loginHistoryRepository.save(loginHistory);
             } else {
                 UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
                 Member member = principal.member();
 
-                LoginHistory loginHistory = new LoginHistory(member, getClientIP(request), LoginStatus.FAIL);
+                LoginHistory loginHistory = new LoginHistory(member, ClientUtil.getClientIP(request), LoginStatus.FAIL);
                 loginHistoryRepository.save(loginHistory);
                 throw new BusinessException(ResponseCode.INVALID_LOGIN_INFO);
             }
@@ -65,69 +66,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         } catch (IOException e) {
             throw new BusinessException(ResponseCode.SERVER_ERROR);
         }
-    }
-
-    private String getClientIP(HttpServletRequest request) {
-
-        // === 전체 헤더 로그 출력 (디버깅용) ===
-        log.info("=== All Request Headers ===");
-        request.getHeaderNames().asIterator().forEachRemaining(headerName -> {
-            String headerValue = request.getHeader(headerName);
-            log.info("{}: {}", headerName, headerValue);
-        });
-        log.info("=== End of Headers ===");
-
-        // 클라우드 플레어 헤더 우선 체크
-        String ip = request.getHeader("CF-Connecting-IP");
-        log.info("CF-Connecting-IP: {}", ip);
-        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-            log.info("Extracted Client IP from CF-Connecting-IP: {}", ip);
-            return ip;
-        }
-
-        // X-Real-IP 헤더 우선 체크
-        ip = request.getHeader("X-Real-IP");
-        log.info("X-Real-IP: {}", ip);
-        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-            log.info("Extracted Client IP from X-Real-IP: {}", ip);
-            return ip;
-        }
-
-        ip = request.getHeader("X-Forwarded-For");
-        log.info("X-Forwarded-For : {}", ip);
-
-        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-            // 여러 IP가 있을 때 첫 번째(클라이언트 IP)만 추출
-            ip = ip.split(",")[0].trim();
-            log.info("Extracted Client IP from X-Forwarded-For: {}", ip);
-            return ip;
-        }
-
-        // 기존 다른 헤더 체크 (필요시 유지)
-        ip = request.getHeader("Proxy-Client-IP");
-        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-            return ip;
-        }
-
-        ip = request.getHeader("WL-Proxy-Client-IP");
-        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-            return ip;
-        }
-
-        ip = request.getHeader("HTTP_CLIENT_IP");
-        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-            return ip;
-        }
-
-        ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-            ip = ip.split(",")[0].trim();
-            return ip;
-        }
-
-        ip = request.getRemoteAddr();
-        log.info("Fallback to getRemoteAddr(): {}", ip);
-        return ip;
     }
 
     /**

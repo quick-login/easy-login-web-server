@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import kr.co.easylogin.easyloginwebserver.common.utils.ClientUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,7 @@ public class RequestLogger {
         String params = getRequestParams(request);
 
         log.info(">>> [LOG START] : {}", uuid);
-        log.info(">>> [IP] : {}", request.getRemoteAddr());
+        log.info(">>> [IP] : {}", ClientUtil.getClientIP(request));
         log.info(">>> [{}] {}", httpMethod, apiUrl);
         log.info(">>> Params: {}", params);
         log.info(">>> Body : Filter 바디값 체크 X");
