@@ -13,6 +13,7 @@ public class ClientUtil {
         // 이지로그인 클라 수집아이피
         String ip = request.getHeader("EZP-REQ-IP");
         if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            log.info("ip ========== {}", ip);
             return ip;
         }
 
